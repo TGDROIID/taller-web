@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión - Taller Mecánico</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f6f9; color: #333; }
+        header { background-color: #1e293b; color: white; padding: 20px; text-align: center; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h2 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { background: #f8fafc; margin: 8px 0; padding: 12px; border-left: 4px solid #3b82f6; border-radius: 4px; }
+        input, button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #3b82f6; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #2563eb; }
+        .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .oculto { display: none !important; }
+        .user-info { display: flex; justify-content: space-between; align-items: center; background: #334155; color: white; padding: 10px 20px; }
+        .user-info button { width: auto; background: #ef4444; margin: 0; padding: 5px 15px; }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE LOGIN -->
+    <div id="seccion-login" class="login-box">
+        <h2>🔐 Iniciar Sesión</h2>
+        <p style="font-size: 14px; color: #64748b;">Prueba con: <b>admin</b> / 123, <b>mecanico1</b> / 123, o <b>cliente1</b> / 123</p>
+        <form id="form-login">
+            <input type="text" id="usuario" placeholder="Usuario" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Entrar al Sistema</button>
+            <p id="error-login" style="color: red; font-size: 14px; text-align: center;"></p>
+        </form>
+    </div>
+
+    <!-- PANEL PRINCIPAL (OCULTO HASTA INICIAR SESIÓN) -->
+    <div id="seccion-panel" class="oculto">
+        <header>
+            <h1>🛠️ Panel de Control - Taller Mecánico</h1>
+            <p>Control de Acceso Basado en Roles (RBAC)</p>
+        </header>
+
+        <div class="user-info">
+            <span id="saludo-usuario">Bienvenido</span>
+            <button onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+
+        <div class="container">
+            
+            <!-- VISTA DE ADMINISTRADOR -->
+            <div id="vista-admin" class="oculto">
+                <div class="grid">
+                    <div class="card">
+                        <h2>👥 Clientes Registrados</h2>
+                        <ul id="lista-clientes">Cargando...</ul>
+                    </div>
+                    <div class="card">
+                        <h2>➕ Agregar Nuevo Cliente</h2>
+                        <form id="form-cliente">
+                            <input type="text" id="nombre" placeholder="Nombre(s)" required>
+                            <input type="text" id="apellidos" placeholder="Apellidos" required>
+                            <input type="text" id="telefono" placeholder="Teléfono" required>
+                            <input type="email" id="correo" placeholder="Correo electrónico" required>
+                            <button type="submit">Guardar Cliente</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA DE MECÁNICO -->
+            <div id="vista-mecanico" class="oculto">
+                <div class="card">
+                    <h2>👨‍🔧 Órdenes de Trabajo Asignadas</h2>
+                    <p>Panel operativo para actualización de diagnósticos y reparaciones.</p>
+                    <ul id="lista-ordenes-mecanico">Cargando órdenes...</ul>
+                </div>
+            </div>
+
+            <!-- VISTA DE CLIENTE -->
+            <div id="vista-cliente" class="oculto">
+                <div class="card">
+                    <h2>🚗 Estado de mi Vehículo en el Taller</h2>
+                    <ul id="lista-vehiculos-cliente">Consultando historial...</ul>
+                </div>
+            </div>
+
+            <!-- SECCIONES GENERALES COMPARTIDAS -->
+            <div class="card" id="card-vehiculos">
+                <h2>🚗 Vehículos en el Taller</h2>
+                <ul id="lista-vehiculos">Cargando vehículos...</ul>
+            </div>
+
+            <div class="card" id="card-ordenes">
+                <h2>📋 Órdenes de Servicio Activas</h2>
+                <ul id="lista-ordenes">Cargando órdenes...</ul>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Manejar el formulario de Login (Ruta relativa /api/login)
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const usuario = document.getElementById('usuario').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, password })
+                });
+                const data = await res.json();
+
+                if (data.exito) {
+                    document.getElementById('seccion-login').classList.add('oculto');
+                    document.getElementById('seccion-panel').classList.remove('oculto');
+                    document.getElementById('saludo-usuario').innerText = `Usuario: ${data.nombre} (${data.rol.toUpperCase()})`;
+
+                    aplicarPermisosRol(data.rol);
+                    cargarDatos();
+                } else {
+                    document.getElementById('error-login').innerText = data.mensaje;
+                }
+            } catch (err) {
+                document.getElementById('error-login').innerText = 'Error al conectar con el servidor.';
+            }
+        });
+
+        function aplicarPermisosRol(rol) {
+            document.getElementById('vista-admin').classList.add('oculto');
+            document.getElementById('vista-mecanico').classList.add('oculto');
+            document.getElementById('vista-cliente').classList.add('oculto');
+
+            if (rol === 'administrador') {
+                document.getElementById('vista-admin').classList.remove('oculto');
+            } else if (rol === 'mecanico') {
+                document.getElementById('vista-mecanico').classList.remove('oculto');
+            } else if (rol === 'cliente') {
+                document.getElementById('vista-cliente').classList.remove('oculto');
+            }
+        }
+
+        function cerrarSesion() {
+            document.getElementById('seccion-panel').classList.add('oculto');
+            document.getElementById('seccion-login').classList.remove('oculto');
+            document.getElementById('form-login').reset();
+            document.getElementById('error-login').innerText = '';
+        }
+
+        function cargarDatos() {
+            // Cargar Clientes (Ruta relativa /api/clientes)
+            fetch('/api/clientes')
+                .then(res => res.json())
+                .then(data => {
+                    const lista = document.getElementById('lista-clientes');
+                    if(lista) {
+                        lista.innerHTML = data.length === 0 ? '<li>No hay clientes.</li>' : '';
+                        data.forEach(c => {
+                            lista.innerHTML += `<li><strong>${c.nombre} ${c.apellidos}</strong><br>📞 ${c.telefono || 'Sin teléfono'} | ✉️ ${c.correo || 'Sin correo'}</li>`;
+                        });
+                    }
+                });
+
+            // Cargar Vehículos (Ruta relativa /api/vehiculos)
+            fetch('/api/vehiculos')
+                .then(res => res.json())
+                .then(data => {
+                    const lista = document.getElementById('lista-vehiculos');
+                    const listaCliente = document.getElementById('lista-vehiculos-cliente');
+                    if(lista) {
+                        lista.innerHTML = data.length === 0 ? '<li>No hay vehículos registrados.</li>' : '';
+                        data.forEach(v => {
+                            lista.innerHTML += `<li>🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> (${v.año || ''}) - Placas: <code>${v.placas || 'N/A'}</code></li>`;
+                        });
+                    }
+                    if(listaCliente) {
+                        listaCliente.innerHTML = data.length === 0 ? '<li>No hay vehículos asociados.</li>' : '';
+                        data.forEach(v => {
+                            listaCliente.innerHTML += `<li>🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> - Estado: En revisión en el taller.</li>`;
+                        });
+                    }
+                });
+
+            // Cargar Órdenes de Servicio (Ruta relativa /api/ordenes)
+            fetch('/api/ordenes')
+                .then(res => res.json())
+                .then(data => {
+                    const lista = document.getElementById('lista-ordenes');
+                    const listaMecanico = document.getElementById('lista-ordenes-mecanico');
+                    if(lista) {
+                        lista.innerHTML = data.length === 0 ? '<li>No hay órdenes activas.</li>' : '';
+                        data.forEach(o => {
+                            lista.innerHTML += `<li>🔧 <strong>Orden #${o.folio || o._id}</strong> - Estado: <em>${o.estado || 'Pendiente'}</em><br>📝 ${o.descripcion || 'Sin descripción'}</li>`;
+                        });
+                    }
+                    if(listaMecanico) {
+                        listaMecanico.innerHTML = data.length === 0 ? '<li>No hay órdenes asignadas.</li>' : '';
+                        data.forEach(o => {
+                            listaMecanico.innerHTML += `<li>🔧 <strong>Orden #${o.folio || o._id}</strong> - Estado actual: <b>${o.estado || 'Pendiente'}</b><br>📝 ${o.descripcion || 'Sin descripción'}</li>`;
+                        });
+                    }
+                });
+        }
+
+        // Manejar el formulario de registro de clientes (Ruta relativa /api/clientes)
+        const formCliente = document.getElementById('form-cliente');
+        if(formCliente) {
+            formCliente.addEventListener('submit', e => {
+                e.preventDefault();
+                const nuevo = {
+                    nombre: document.getElementById('nombre').value,
+                    apellidos: document.getElementById('apellidos').value,
+                    telefono: document.getElementById('telefono').value,
+                    correo: document.getElementById('correo').value
+                };
+
+                fetch('/api/clientes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(nuevo)
+                })
+                .then(res => res.json())
+                .then(res => {
+                    alert(res.mensaje);
+                    formCliente.reset();
+                    cargarDatos();
+                })
+                .catch(err => alert('Error al guardar el cliente'));
+            });
+        }
+    </script>
+
+</body>
+</html>
