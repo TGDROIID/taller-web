@@ -12,10 +12,16 @@
         h2 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         ul { list-style-type: none; padding: 0; }
-        li { background: #f8fafc; margin: 8px 0; padding: 12px; border-left: 4px solid #3b82f6; border-radius: 4px; }
-        input, button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+        li { background: #f8fafc; margin: 8px 0; padding: 12px; border-left: 4px solid #3b82f6; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .info-content { flex-grow: 1; }
+        .action-buttons { display: flex; gap: 5px; }
+        input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
         button { background-color: #3b82f6; color: white; border: none; font-weight: bold; cursor: pointer; }
         button:hover { background-color: #2563eb; }
+        .btn-editar { background-color: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-editar:hover { background-color: #d97706; }
+        .btn-eliminar { background-color: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-eliminar:hover { background-color: #dc2626; }
         .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .oculto { display: none !important; }
         .user-info { display: flex; justify-content: space-between; align-items: center; background: #334155; color: white; padding: 10px 20px; }
@@ -24,7 +30,7 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE LOGIN -->
+    <!-- LOGIN -->
     <div id="seccion-login" class="login-box">
         <h2>🔐 Iniciar Sesión</h2>
         <p style="font-size: 14px; color: #64748b;">Prueba con: <b>admin</b> / 123, <b>mecanico1</b> / 123, o <b>cliente1</b> / 123</p>
@@ -36,7 +42,7 @@
         </form>
     </div>
 
-    <!-- PANEL PRINCIPAL (OCULTO HASTA INICIAR SESIÓN) -->
+    <!-- PANEL PRINCIPAL -->
     <div id="seccion-panel" class="oculto">
         <header>
             <h1>🛠️ Panel de Control - Taller Mecánico</h1>
@@ -58,15 +64,85 @@
                         <ul id="lista-clientes">Cargando...</ul>
                     </div>
                     <div class="card">
-                        <h2>➕ Agregar Nuevo Cliente</h2>
+                        <h2 id="titulo-form-cliente">➕ Agregar Nuevo Cliente</h2>
                         <form id="form-cliente">
-                            <input type="text" id="nombre" placeholder="Nombre(s)" required>
-                            <input type="text" id="apellidos" placeholder="Apellidos" required>
-                            <input type="text" id="telefono" placeholder="Teléfono" required>
-                            <input type="email" id="correo" placeholder="Correo electrónico" required>
-                            <button type="submit">Guardar Cliente</button>
+                            <input type="hidden" id="edit-id-cliente">
+                            <input type="text" id="nombre-c" placeholder="Nombre(s)" required>
+                            <input type="text" id="apellidos-c" placeholder="Apellidos" required>
+                            <input type="text" id="telefono-c" placeholder="Teléfono" required>
+                            <input type="email" id="correo-c" placeholder="Correo electrónico" required>
+                            <button type="submit" id="btn-guardar-cliente">Guardar Cliente</button>
                         </form>
                     </div>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h2>🚗 Registrar Vehículo</h2>
+                        <form id="form-vehiculo">
+                            <input type="text" id="marca-v" placeholder="Marca (ej. Ford)" required>
+                            <input type="text" id="modelo-v" placeholder="Modelo (ej. Focus)" required>
+                            <input type="number" id="anio-v" placeholder="Año (ej. 2018)" required>
+                            <input type="text" id="placas-v" placeholder="Placas (ej. YK-892-A)" required>
+                            <select id="cliente-v"><option value="">Asignar a Cliente (Opcional)...</option></select>
+                            <button type="submit">Guardar Vehículo</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h2>📋 Crear Orden de Servicio</h2>
+                        <form id="form-orden">
+                            <input type="text" id="folio-o" placeholder="Folio (ej. 101)" required>
+                            <input type="text" id="desc-o" placeholder="Descripción del trabajo" required>
+                            <select id="estado-o">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En Proceso">En Proceso</option>
+                                <option value="Finalizado">Finalizado</option>
+                            </select>
+                            <select id="vehiculo-o"><option value="">Asignar a Vehículo (Opcional)...</option></select>
+                            <button type="submit">Generar Orden</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h2>👨‍🔧 Registrar Empleado</h2>
+                        <form id="form-empleado">
+                            <input type="text" id="nombre-e" placeholder="Nombre completo" required>
+                            <select id="puesto-e" required>
+                                <option value="">Selecciona el Puesto...</option>
+                                <option value="mecanico">Mecánico</option>
+                                <option value="recepcion">Recepción</option>
+                                <option value="gerente">Gerente</option>
+                                <option value="refacciones">Refacciones</option>
+                            </select>
+                            <input type="text" id="telefono-e" placeholder="Teléfono" required>
+                            <button type="submit">Guardar Empleado</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h2 id="titulo-form-refaccion">⚙️ Registrar Refacción</h2>
+                        <form id="form-refaccion">
+                            <input type="hidden" id="edit-id-refaccion">
+                            <input type="text" id="nombre-r" placeholder="Nombre de la refacción" required>
+                            <input type="number" step="0.01" id="precio-r" placeholder="Precio ($)" required>
+                            <input type="number" id="stock-r" placeholder="Stock disponible" required>
+                            <button type="submit" id="btn-guardar-refaccion">Guardar Refacción</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 id="titulo-form-servicio">🛠️ Registrar Catálogo de Servicio</h2>
+                    <form id="form-servicio">
+                        <input type="hidden" id="edit-id-servicio">
+                        <div class="grid">
+                            <input type="text" id="nombre-s" placeholder="Nombre del servicio" required>
+                            <input type="number" step="0.01" id="costo-s" placeholder="Costo ($)" required>
+                        </div>
+                        <input type="text" id="desc-s" placeholder="Descripción breve del servicio" required>
+                        <button type="submit" id="btn-guardar-servicio">Guardar Servicio</button>
+                    </form>
                 </div>
             </div>
 
@@ -74,35 +150,49 @@
             <div id="vista-mecanico" class="oculto">
                 <div class="card">
                     <h2>👨‍🔧 Órdenes de Trabajo Asignadas</h2>
-                    <p>Panel operativo para actualización de diagnósticos y reparaciones.</p>
                     <ul id="lista-ordenes-mecanico">Cargando órdenes...</ul>
                 </div>
             </div>
 
             <!-- VISTA DE CLIENTE -->
             <div id="vista-cliente" class="oculto">
-                <div class="card">
-                    <h2>🚗 Estado de mi Vehículo en el Taller</h2>
+                <div class="card" style="border-left: 5px solid #10b981;">
+                    <h2>🚗 Estado Actual de mi Vehículo</h2>
                     <ul id="lista-vehiculos-cliente">Consultando historial...</ul>
                 </div>
             </div>
 
-            <!-- SECCIONES GENERALES COMPARTIDAS -->
-            <div class="card" id="card-vehiculos">
-                <h2>🚗 Vehículos en el Taller</h2>
+            <!-- SECCIONES GENERALES -->
+            <div class="card">
+                <h2>🚗 Vehículos Registrados en el Taller</h2>
                 <ul id="lista-vehiculos">Cargando vehículos...</ul>
             </div>
 
-            <div class="card" id="card-ordenes">
+            <div class="card">
                 <h2>📋 Órdenes de Servicio Activas</h2>
                 <ul id="lista-ordenes">Cargando órdenes...</ul>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>👨‍🔧 Empleados del Taller</h2>
+                    <ul id="lista-empleados">Cargando empleados...</ul>
+                </div>
+                <div class="card">
+                    <h2>⚙️ Inventario de Refacciones</h2>
+                    <ul id="lista-refacciones">Cargando refacciones...</ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🛠️ Catálogo de Servicios</h2>
+                <ul id="lista-servicios">Cargando servicios...</ul>
             </div>
 
         </div>
     </div>
 
     <script>
-        // Manejar el formulario de Login (Ruta relativa /api/login)
         document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
             const usuario = document.getElementById('usuario').value;
@@ -136,13 +226,9 @@
             document.getElementById('vista-mecanico').classList.add('oculto');
             document.getElementById('vista-cliente').classList.add('oculto');
 
-            if (rol === 'administrador') {
-                document.getElementById('vista-admin').classList.remove('oculto');
-            } else if (rol === 'mecanico') {
-                document.getElementById('vista-mecanico').classList.remove('oculto');
-            } else if (rol === 'cliente') {
-                document.getElementById('vista-cliente').classList.remove('oculto');
-            }
+            if (rol === 'administrador') document.getElementById('vista-admin').classList.remove('oculto');
+            else if (rol === 'mecanico') document.getElementById('vista-mecanico').classList.remove('oculto');
+            else if (rol === 'cliente') document.getElementById('vista-cliente').classList.remove('oculto');
         }
 
         function cerrarSesion() {
@@ -152,41 +238,113 @@
             document.getElementById('error-login').innerText = '';
         }
 
+        // Funciones para cargar datos a los formularios al editar
+        function prepararEdicionCliente(id, nombre, apellidos, telefono, correo) {
+            document.getElementById('edit-id-cliente').value = id;
+            document.getElementById('nombre-c').value = nombre === 'undefined' ? '' : nombre;
+            document.getElementById('apellidos-c').value = apellidos === 'undefined' ? '' : apellidos;
+            document.getElementById('telefono-c').value = telefono === 'undefined' ? '' : telefono;
+            document.getElementById('correo-c').value = (correo === 'undefined' || correo === 'Sin correo') ? '' : correo;
+            document.getElementById('titulo-form-cliente').innerText = "✏️ Actualizar Cliente";
+            document.getElementById('btn-guardar-cliente').innerText = "Actualizar Cliente";
+        }
+
+        function prepararEdicionRefaccion(id, nombre, precio, stock) {
+            document.getElementById('edit-id-refaccion').value = id;
+            document.getElementById('nombre-r').value = nombre;
+            document.getElementById('precio-r').value = precio;
+            document.getElementById('stock-r').value = stock;
+            document.getElementById('titulo-form-refaccion').innerText = "✏️ Actualizar Refacción";
+            document.getElementById('btn-guardar-refaccion').innerText = "Actualizar Refacción";
+        }
+
+        function prepararEdicionServicio(id, nombre, costo, descripcion) {
+            document.getElementById('edit-id-servicio').value = id;
+            document.getElementById('nombre-s').value = nombre;
+            document.getElementById('costo-s').value = costo;
+            document.getElementById('desc-s').value = descripcion === 'undefined' ? '' : descripcion;
+            document.getElementById('titulo-form-servicio').innerText = "✏️ Actualizar Servicio";
+            document.getElementById('btn-guardar-servicio').innerText = "Actualizar Servicio";
+        }
+
+        // Función global para eliminar registros
+        async function eliminarRegistro(coleccion, id) {
+            if (!confirm("¿Estás seguro de eliminar este registro de la base de datos?")) return;
+
+            try {
+                const respuesta = await fetch(`/api/${coleccion}/${id}`, { method: 'DELETE' });
+                const resultado = await respuesta.json();
+                if (resultado.exito) {
+                    alert("¡Eliminado con éxito!");
+                    cargarDatos();
+                } else {
+                    alert("Error al eliminar: " + resultado.mensaje);
+                }
+            } catch (error) {
+                console.error("Error de red:", error);
+                alert("Error de conexión con el servidor");
+            }
+        }
+
         function cargarDatos() {
-            // Cargar Clientes (Ruta relativa /api/clientes)
+            // Clientes
             fetch('/api/clientes')
                 .then(res => res.json())
                 .then(data => {
                     const lista = document.getElementById('lista-clientes');
+                    const selectC = document.getElementById('cliente-v');
                     if(lista) {
                         lista.innerHTML = data.length === 0 ? '<li>No hay clientes.</li>' : '';
+                        if(selectC) selectC.innerHTML = '<option value="">Asignar a Cliente (Opcional)...</option>';
                         data.forEach(c => {
-                            lista.innerHTML += `<li><strong>${c.nombre} ${c.apellidos}</strong><br>📞 ${c.telefono || 'Sin teléfono'} | ✉️ ${c.correo || 'Sin correo'}</li>`;
+                            const tel = c.telefono || '';
+                            const corr = c.correo || '';
+                            lista.innerHTML += `
+                                <li>
+                                    <div class="info-content"><strong>${c.nombre} ${c.apellidos}</strong><br>📞 ${tel || 'Sin teléfono'} | ✉️ ${corr || 'Sin correo'}</div>
+                                    <div class="action-buttons">
+                                        <button class="btn-editar" onclick="prepararEdicionCliente('${c._id}', '${c.nombre}', '${c.apellidos}', '${tel}', '${corr}')">Editar</button>
+                                        <button class="btn-eliminar" onclick="eliminarRegistro('clientes', '${c._id}')">Eliminar</button>
+                                    </div>
+                                </li>`;
+                            if(selectC) selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
                         });
                     }
                 });
 
-            // Cargar Vehículos (Ruta relativa /api/vehiculos)
+            // Vehículos
             fetch('/api/vehiculos')
                 .then(res => res.json())
                 .then(data => {
                     const lista = document.getElementById('lista-vehiculos');
                     const listaCliente = document.getElementById('lista-vehiculos-cliente');
+                    const selectV = document.getElementById('vehiculo-o');
                     if(lista) {
                         lista.innerHTML = data.length === 0 ? '<li>No hay vehículos registrados.</li>' : '';
+                        if(selectV) selectV.innerHTML = '<option value="">Asignar a Vehículo (Opcional)...</option>';
                         data.forEach(v => {
-                            lista.innerHTML += `<li>🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> (${v.año || ''}) - Placas: <code>${v.placas || 'N/A'}</code></li>`;
+                            lista.innerHTML += `
+                                <li>
+                                    <div class="info-content">🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> (${v.año || v.anio || ''}) - Placas: <code>${v.placa || v.placas || 'N/A'}</code></div>
+                                    <div class="action-buttons">
+                                        <button class="btn-eliminar" onclick="eliminarRegistro('vehiculos', '${v._id}')">Eliminar</button>
+                                    </div>
+                                </li>`;
+                            if(selectV) selectV.innerHTML += `<option value="${v._id}">${v.marca} ${v.modelo} (${v.placa || v.placas || 'Sin placa'})</option>`;
                         });
                     }
                     if(listaCliente) {
-                        listaCliente.innerHTML = data.length === 0 ? '<li>No hay vehículos asociados.</li>' : '';
+                        listaCliente.innerHTML = data.length === 0 ? '<li>No hay vehículos asociados en revisión.</li>' : '';
                         data.forEach(v => {
-                            listaCliente.innerHTML += `<li>🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> - Estado: En revisión en el taller.</li>`;
+                            listaCliente.innerHTML += `
+                                <li>
+                                    <div class="info-content">🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> (${v.año || v.anio || ''})<br>📌 Estado: <b style="color: #2563eb;">En Diagnóstico y Reparación</b><br>📝 Placas: <code>${v.placa || v.placas || 'N/A'}</code></div>
+                                </li>`;
                         });
                     }
                 });
 
-            // Cargar Órdenes de Servicio (Ruta relativa /api/ordenes)
+            // Órdenes de Servicio
             fetch('/api/ordenes')
                 .then(res => res.json())
                 .then(data => {
@@ -195,44 +353,191 @@
                     if(lista) {
                         lista.innerHTML = data.length === 0 ? '<li>No hay órdenes activas.</li>' : '';
                         data.forEach(o => {
-                            lista.innerHTML += `<li>🔧 <strong>Orden #${o.folio || o._id}</strong> - Estado: <em>${o.estado || 'Pendiente'}</em><br>📝 ${o.descripcion || 'Sin descripción'}</li>`;
+                            lista.innerHTML += `
+                                <li>
+                                    <div class="info-content">🔧 <strong>Orden #${o.folio}</strong> - Estado: <em>${o.estado}</em><br>📝 ${o.descripcion}</div>
+                                    <div class="action-buttons">
+                                        <button class="btn-eliminar" onclick="eliminarRegistro('ordenes', '${o._id}')">Eliminar</button>
+                                    </div>
+                                </li>`;
                         });
                     }
                     if(listaMecanico) {
                         listaMecanico.innerHTML = data.length === 0 ? '<li>No hay órdenes asignadas.</li>' : '';
                         data.forEach(o => {
-                            listaMecanico.innerHTML += `<li>🔧 <strong>Orden #${o.folio || o._id}</strong> - Estado actual: <b>${o.estado || 'Pendiente'}</b><br>📝 ${o.descripcion || 'Sin descripción'}</li>`;
+                            listaMecanico.innerHTML += `
+                                <li>
+                                    <div class="info-content">🔧 <strong>Orden #${o.folio}</strong> - Estado actual: <b>${o.estado}</b><br>📝 ${o.descripcion}</div>
+                                </li>`;
+                        });
+                    }
+                });
+
+            // Empleados
+            fetch('/api/empleados')
+                .then(res => res.json())
+                .then(data => {
+                    const lista = document.getElementById('lista-empleados');
+                    if(lista) {
+                        lista.innerHTML = data.length === 0 ? '<li>No hay empleados registrados.</li>' : '';
+                        data.forEach(e => {
+                            lista.innerHTML += `
+                                <li>
+                                    <div class="info-content">👨‍🔧 <strong>${e.nombre_completo || e.nombre}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono || 'S/N'}</div>
+                                    <div class="action-buttons">
+                                        <button class="btn-eliminar" onclick="eliminarRegistro('empleados', '${e._id}')">Eliminar</button>
+                                    </div>
+                                </li>`;
+                        });
+                    }
+                });
+
+            // Refacciones
+            fetch('/api/refacciones')
+                .then(res => res.json())
+                .then(data => {
+                    const lista = document.getElementById('lista-refacciones');
+                    if(lista) {
+                        lista.innerHTML = data.length === 0 ? '<li>No hay refacciones en inventario.</li>' : '';
+                        data.forEach(r => {
+                            const pVal = r.precio_venta || r.precio || 0;
+                            const stockVal = r.stock || 0;
+                            lista.innerHTML += `
+                                <li>
+                                    <div class="info-content">⚙️ <strong>${r.nombre}</strong><br>💲 Precio: $${pVal} | 📦 Stock: ${stockVal} unidades</div>
+                                    <div class="action-buttons">
+                                        <button class="btn-editar" onclick="prepararEdicionRefaccion('${r._id}', '${r.nombre}', '${pVal}', '${stockVal}')">Editar</button>
+                                        <button class="btn-eliminar" onclick="eliminarRegistro('refacciones', '${r._id}')">Eliminar</button>
+                                    </div>
+                                </li>`;
+                        });
+                    }
+                });
+
+            // Servicios
+            fetch('/api/servicios')
+                .then(res => res.json())
+                .then(data => {
+                    const lista = document.getElementById('lista-servicios');
+                    if(lista) {
+                        lista.innerHTML = data.length === 0 ? '<li>No hay servicios registrados.</li>' : '';
+                        data.forEach(s => {
+                            const costoVal = s.precio_base || s.costo || 0;
+                            const descVal = s.descripcion || '';
+                            lista.innerHTML += `
+                                <li>
+                                    <div class="info-content">🛠️ <strong>${s.nombre}</strong> (Costo: $${costoVal})<br>📝 ${descVal}</div>
+                                    <div class="action-buttons">
+                                        <button class="btn-editar" onclick="prepararEdicionServicio('${s._id}', '${s.nombre}', '${costoVal}', '${descVal}')">Editar</button>
+                                        <button class="btn-eliminar" onclick="eliminarRegistro('servicios', '${s._id}')">Eliminar</button>
+                                    </div>
+                                </li>`;
                         });
                     }
                 });
         }
 
-        // Manejar el formulario de registro de clientes (Ruta relativa /api/clientes)
-        const formCliente = document.getElementById('form-cliente');
-        if(formCliente) {
-            formCliente.addEventListener('submit', e => {
-                e.preventDefault();
-                const nuevo = {
-                    nombre: document.getElementById('nombre').value,
-                    apellidos: document.getElementById('apellidos').value,
-                    telefono: document.getElementById('telefono').value,
-                    correo: document.getElementById('correo').value
-                };
+        // Formularios con soporte dinámico para Crear (POST) o Editar (PUT)
+        document.getElementById('form-cliente').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id-cliente').value;
+            const datos = { 
+                nombre: document.getElementById('nombre-c').value, 
+                apellidos: document.getElementById('apellidos-c').value, 
+                telefono: document.getElementById('telefono-c').value, 
+                correo: document.getElementById('correo-c').value 
+            };
+            
+            const url = id ? `/api/clientes/${id}` : '/api/clientes';
+            const metodo = id ? 'PUT' : 'POST';
 
-                fetch('/api/clientes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(nuevo)
-                })
-                .then(res => res.json())
-                .then(res => {
-                    alert(res.mensaje);
-                    formCliente.reset();
-                    cargarDatos();
-                })
-                .catch(err => alert('Error al guardar el cliente'));
-            });
-        }
+            try {
+                const res = await fetch(url, { method: metodo, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+                const resultado = await res.json();
+                alert(resultado.mensaje || "Operación exitosa");
+                e.target.reset();
+                document.getElementById('edit-id-cliente').value = '';
+                document.getElementById('titulo-form-cliente').innerText = "➕ Agregar Nuevo Cliente";
+                document.getElementById('btn-guardar-cliente').innerText = "Guardar Cliente";
+                cargarDatos();
+            } catch (err) {
+                alert("Error al procesar la solicitud del cliente.");
+            }
+        });
+
+        document.getElementById('form-vehiculo').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nuevoV = { marca: document.getElementById('marca-v').value, modelo: document.getElementById('modelo-v').value, año: document.getElementById('anio-v').value, placas: document.getElementById('placas-v').value, cliente_id: document.getElementById('cliente-v').value };
+            const res = await fetch('/api/vehiculos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevoV) });
+            const resultado = await res.json();
+            alert(resultado.mensaje);
+            e.target.reset();
+            cargarDatos();
+        });
+
+        document.getElementById('form-orden').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nuevaO = { folio: document.getElementById('folio-o').value, descripcion: document.getElementById('desc-o').value, estado: document.getElementById('estado-o').value, vehiculo_id: document.getElementById('vehiculo-o').value };
+            const res = await fetch('/api/ordenes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevaO) });
+            const resultado = await res.json();
+            alert(resultado.mensaje);
+            e.target.reset();
+            cargarDatos();
+        });
+
+        document.getElementById('form-empleado').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nuevoE = { nombre: document.getElementById('nombre-e').value, puesto: document.getElementById('puesto-e').value, telefono: document.getElementById('telefono-e').value };
+            const res = await fetch('/api/empleados', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevoE) });
+            const resultado = await res.json();
+            alert(resultado.mensaje);
+            e.target.reset();
+            cargarDatos();
+        });
+
+        document.getElementById('form-refaccion').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id-refaccion').value;
+            const datos = { nombre: document.getElementById('nombre-r').value, precio: document.getElementById('precio-r').value, stock: document.getElementById('stock-r').value };
+            
+            const url = id ? `/api/refacciones/${id}` : '/api/refacciones';
+            const metodo = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, { method: metodo, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+                const resultado = await res.json();
+                alert(resultado.mensaje || "Operación exitosa");
+                e.target.reset();
+                document.getElementById('edit-id-refaccion').value = '';
+                document.getElementById('titulo-form-refaccion').innerText = "⚙️ Registrar Refacción";
+                document.getElementById('btn-guardar-refaccion').innerText = "Guardar Refacción";
+                cargarDatos();
+            } catch (err) {
+                alert("Error al procesar la refacción.");
+            }
+        });
+
+        document.getElementById('form-servicio').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id-servicio').value;
+            const datos = { nombre: document.getElementById('nombre-s').value, costo: document.getElementById('costo-s').value, descripcion: document.getElementById('desc-s').value };
+            
+            const url = id ? `/api/servicios/${id}` : '/api/servicios';
+            const metodo = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, { method: metodo, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+                const resultado = await res.json();
+                alert(resultado.mensaje || "Operación exitosa");
+                e.target.reset();
+                document.getElementById('edit-id-servicio').value = '';
+                document.getElementById('titulo-form-servicio').innerText = "🛠️ Registrar Catálogo de Servicio";
+                document.getElementById('btn-guardar-servicio').innerText = "Guardar Servicio";
+                cargarDatos();
+            } catch (err) {
+                alert("Error al procesar el servicio.");
+            }
+        });
     </script>
 
 </body>
