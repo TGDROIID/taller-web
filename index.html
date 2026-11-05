@@ -238,7 +238,6 @@
             document.getElementById('error-login').innerText = '';
         }
 
-        // Funciones para cargar datos a los formularios al editar
         function prepararEdicionCliente(id, nombre, apellidos, telefono, correo) {
             document.getElementById('edit-id-cliente').value = id;
             document.getElementById('nombre-c').value = nombre === 'undefined' ? '' : nombre;
@@ -267,7 +266,6 @@
             document.getElementById('btn-guardar-servicio').innerText = "Actualizar Servicio";
         }
 
-        // Función global para eliminar registros
         async function eliminarRegistro(coleccion, id) {
             if (!confirm("¿Estás seguro de eliminar este registro de la base de datos?")) return;
 
@@ -286,7 +284,7 @@
             }
         }
 
-        function cargarDatos() {
+        async function cargarDatos() {
             // Clientes
             fetch('/api/clientes')
                 .then(res => res.json())
@@ -344,34 +342,67 @@
                     }
                 });
 
-            // Órdenes de Servicio
-            fetch('/api/ordenes')
-                .then(res => res.json())
-                .then(data => {
-                    const lista = document.getElementById('lista-ordenes');
-                    const listaMecanico = document.getElementById('lista-ordenes-mecanico');
-                    if(lista) {
-                        lista.innerHTML = data.length === 0 ? '<li>No hay órdenes activas.</li>' : '';
-                        data.forEach(o => {
-                            lista.innerHTML += `
-                                <li>
-                                    <div class="info-content">🔧 <strong>Orden #${o.folio}</strong> - Estado: <em>${o.estado}</em><br>📝 ${o.descripcion}</div>
-                                    <div class="action-buttons">
-                                        <button class="btn-eliminar" onclick="eliminarRegistro('ordenes', '${o._id}')">Eliminar</button>
-                                    </div>
-                                </li>`;
+            // Órdenes de Servicio (Con asignación de mecánico y cambio de estados dinámico)
+            try {
+                let ordenesRes = await fetch('/api/ordenes');
+                let data = await ordenesRes.json();
+
+                let empleadosRes = await fetch('/api/empleados');
+                let empleados = await empleadosRes.json();
+                let opcionesMecanicos = empleados.filter(e => e.puesto === 'mecanico' || e.puesto === 'Mecánico');
+
+                const lista = document.getElementById('lista-ordenes');
+                const listaMecanico = document.getElementById('lista-ordenes-mecanico');
+                
+                if(lista) {
+                    lista.innerHTML = data.length === 0 ? '<li>No hay órdenes activas.</li>' : '';
+                    data.forEach(o => {
+                        let selectMecanicoHtml = `<select id="mecanico-select-${o._id}" style="font-size:11px; padding:4px; margin-bottom:4px;">
+                            <option value="">Asignar mecánico...</option>`;
+                        opcionesMecanicos.forEach(m => {
+                            let nombreMec = m.nombre_completo || m.nombre;
+                            let seleccionado = o.mecanico_asignado === nombreMec ? 'selected' : '';
+                            selectMecanicoHtml += `<option value="${nombreMec}" ${seleccionado}>${nombreMec}</option>`;
                         });
-                    }
-                    if(listaMecanico) {
-                        listaMecanico.innerHTML = data.length === 0 ? '<li>No hay órdenes asignadas.</li>' : '';
-                        data.forEach(o => {
-                            listaMecanico.innerHTML += `
-                                <li>
-                                    <div class="info-content">🔧 <strong>Orden #${o.folio}</strong> - Estado actual: <b>${o.estado}</b><br>📝 ${o.descripcion}</div>
-                                </li>`;
-                        });
-                    }
-                });
+                        selectMecanicoHtml += `</select>`;
+
+                        lista.innerHTML += `
+                            <li>
+                                <div class="info-content">
+                                    🔧 <strong>Orden #${o.folio}</strong> - Estado: <b style="color: #2563eb;">${o.estado}</b><br>
+                                    📝 ${o.descripcion}<br>
+                                    👨‍🔧 Mecánico: <b>${o.mecanico_asignado || 'Sin asignar'}</b>
+                                </div>
+                                <div class="action-buttons" style="flex-direction: column; gap: 4px; min-width: 150px;">
+                                    ${selectMecanicoHtml}
+                                    <button class="btn-editar" style="background-color: #3b82f6; font-size:11px; padding:4px;" onclick="asignarMecanicoOrden('${o._id}')">Asignar</button>
+                                    <button class="btn-editar" style="background-color: #f59e0b; font-size:11px; padding:4px;" onclick="actualizarEstadoOrden('${o._id}', 'en_reparacion')">En Reparación</button>
+                                    <button class="btn-editar" style="background-color: #10b981; font-size:11px; padding:4px;" onclick="actualizarEstadoOrden('${o._id}', 'terminado')">Validar / Finalizar</button>
+                                    <button class="btn-eliminar" style="font-size:11px; padding:4px;" onclick="eliminarRegistro('ordenes', '${o._id}')">Eliminar</button>
+                                </div>
+                            </li>`;
+                    });
+                }
+                
+                if(listaMecanico) {
+                    listaMecanico.innerHTML = data.length === 0 ? '<li>No hay órdenes asignadas.</li>' : '';
+                    data.forEach(o => {
+                        listaMecanico.innerHTML += `
+                            <li>
+                                <div class="info-content">
+                                    🔧 <strong>Orden #${o.folio}</strong> - Estado actual: <b>${o.estado}</b><br>
+                                    📝 ${o.descripcion}<br>
+                                    👨‍🔧 Mecánico: <b>${o.mecanico_asignado || 'Sin asignar'}</b>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-editar" style="background-color: #10b981;" onclick="actualizarEstadoOrden('${o._id}', 'terminado')">Marcar Terminado</button>
+                                </div>
+                            </li>`;
+                    });
+                }
+            } catch (e) {
+                console.error("Error al cargar órdenes:", e);
+            }
 
             // Empleados
             fetch('/api/empleados')
@@ -437,7 +468,59 @@
                 });
         }
 
-        // Formularios con soporte dinámico para Crear (POST) o Editar (PUT)
+        // Funciones para gestionar estados y asignación de mecánicos
+        async function actualizarEstadoOrden(id, nuevoEstado) {
+            try {
+                const res = await fetch(`/api/ordenes/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+                const resultado = await res.json();
+                if (resultado.exito) {
+                    alert("¡Estado de la orden actualizado y validado con éxito!");
+                    cargarDatos();
+                } else {
+                    alert("Error al actualizar el estado.");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Error de conexión con el servidor.");
+            }
+        }
+
+        async function asignarMecanicoOrden(id) {
+            const selectMec = document.getElementById(`mecanico-select-${id}`);
+            const mecanicoElegido = selectMec ? selectMec.value : "";
+
+            if (!mecanicoElegido) {
+                alert("Por favor seleccione un mecánico disponible de la lista.");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/ordenes/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        mecanico_asignado: mecanicoElegido,
+                        estado: "en_reparacion" 
+                    })
+                });
+                const resultado = await res.json();
+                if (resultado.exito) {
+                    alert(`¡Mecánico ${mecanicoElegido} asignado correctamente!`);
+                    cargarDatos();
+                } else {
+                    alert("Error al asignar el mecánico.");
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Error de conexión con el servidor.");
+            }
+        }
+
+        // Formularios (POST / PUT)
         document.getElementById('form-cliente').addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('edit-id-cliente').value;
@@ -539,6 +622,5 @@
             }
         });
     </script>
-
 </body>
 </html>
