@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión - Taller Mecánico</title>
+    <title>AutoGest Pro - Sistema Integral de Taller Mecánico</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f6f9; color: #333; }
-        header { background-color: #1e293b; color: white; padding: 20px; text-align: center; }
-        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        :root { --primary: #1e293b; --accent: #3b82f6; --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --bg: #f4f6f9; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg); color: #333; }
+        header { background-color: var(--primary); color: white; padding: 20px; text-align: center; }
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
         .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h2 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+        h2 { color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 0; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        ul { list-style-type: none; padding: 0; }
-        li { background: #f8fafc; margin: 8px 0; padding: 12px; border-left: 4px solid #3b82f6; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .info-content { flex-grow: 1; }
+        ul { list-style-type: none; padding: 0; max-height: 350px; overflow-y: auto; }
+        li { background: #f8fafc; margin: 8px 0; padding: 12px; border-left: 4px solid var(--accent); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .info-content { flex-grow: 1; font-size: 14px; }
         .action-buttons { display: flex; gap: 5px; }
-        input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #3b82f6; color: white; border: none; font-weight: bold; cursor: pointer; }
+        input, select, button { display: block; width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        button { background-color: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         button:hover { background-color: #2563eb; }
-        .btn-editar { background-color: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; }
-        .btn-editar:hover { background-color: #d97706; }
-        .btn-eliminar { background-color: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; }
-        .btn-eliminar:hover { background-color: #dc2626; }
+        .btn-editar { background-color: var(--warning); padding: 6px 10px; font-size: 12px; width: auto; }
+        .btn-eliminar { background-color: var(--danger); padding: 6px 10px; font-size: 12px; width: auto; }
         .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .oculto { display: none !important; }
         .user-info { display: flex; justify-content: space-between; align-items: center; background: #334155; color: white; padding: 10px 20px; }
-        .user-info button { width: auto; background: #ef4444; margin: 0; padding: 5px 15px; }
+        .user-info button { width: auto; background: var(--danger); margin: 0; padding: 5px 15px; }
+        .search-bar { margin-bottom: 15px; background: #e2e8f0; padding: 8px; border-radius: 6px; }
+        .mode-toggle { display: flex; gap: 10px; margin-bottom: 15px; }
+        .mode-toggle button { background: #cbd5e1; color: #333; }
+        .mode-toggle button.active { background: var(--accent); color: white; }
     </style>
 </head>
 <body>
@@ -33,20 +36,20 @@
     <!-- LOGIN -->
     <div id="seccion-login" class="login-box">
         <h2>🔐 Iniciar Sesión</h2>
-        <p style="font-size: 14px; color: #64748b;">Prueba con: <b>admin</b> / 123, <b>mecanico1</b> / 123, o <b>cliente1</b> / 123</p>
+        <p style="font-size: 13px; color: #64748b;">Acceso al sistema: <b>admin / 123</b></p>
         <form id="form-login">
             <input type="text" id="usuario" placeholder="Usuario" required>
             <input type="password" id="password" placeholder="Contraseña" required>
             <button type="submit">Entrar al Sistema</button>
-            <p id="error-login" style="color: red; font-size: 14px; text-align: center;"></p>
+            <p id="error-login" style="color: red; font-size: 13px; text-align: center;"></p>
         </form>
     </div>
 
     <!-- PANEL PRINCIPAL -->
     <div id="seccion-panel" class="oculto">
         <header>
-            <h1>🛠️ Panel de Control - Taller Mecánico</h1>
-            <p>Control de Acceso Basado en Roles (RBAC)</p>
+            <h1>🛠️ AutoGest Pro - Taller Mecánico</h1>
+            <p>Panel de Control y Gestión Operativa</p>
         </header>
 
         <div class="user-info">
@@ -56,15 +59,26 @@
 
         <div class="container">
             
+            <!-- BARRA DE BÚSQUEDA GLOBAL -->
+            <div class="card search-bar">
+                <input type="text" id="input-busqueda" placeholder="🔍 Buscar cliente, vehículo, orden o refacción en tiempo real..." onkeyup="filtrarRegistros()" style="margin: 0;">
+            </div>
+
             <!-- VISTA DE ADMINISTRADOR -->
             <div id="vista-admin" class="oculto">
+                
+                <!-- GESTIÓN DE CLIENTES -->
                 <div class="grid">
                     <div class="card">
                         <h2>👥 Clientes Registrados</h2>
                         <ul id="lista-clientes">Cargando...</ul>
                     </div>
                     <div class="card">
-                        <h2 id="titulo-form-cliente">➕ Agregar Nuevo Cliente</h2>
+                        <div class="mode-toggle">
+                            <button type="button" id="tab-add-cliente" class="active" onclick="cambiarModoCliente('add')">➕ Añadir Nuevo</button>
+                            <button type="button" id="tab-edit-cliente" onclick="cambiarModoCliente('edit')">✏️ Actualizar</button>
+                        </div>
+                        <h2 id="titulo-form-cliente" style="font-size: 18px;">➕ Registrar Cliente</h2>
                         <form id="form-cliente">
                             <input type="hidden" id="edit-id-cliente">
                             <input type="text" id="nombre-c" placeholder="Nombre(s)" required>
@@ -76,15 +90,16 @@
                     </div>
                 </div>
 
+                <!-- VEHÍCULOS Y ÓRDENES -->
                 <div class="grid">
                     <div class="card">
                         <h2>🚗 Registrar Vehículo</h2>
                         <form id="form-vehiculo">
                             <input type="text" id="marca-v" placeholder="Marca (ej. Ford)" required>
                             <input type="text" id="modelo-v" placeholder="Modelo (ej. Focus)" required>
-                            <input type="number" id="anio-v" placeholder="Año (ej. 2018)" required>
-                            <input type="text" id="placas-v" placeholder="Placas (ej. YK-892-A)" required>
-                            <select id="cliente-v"><option value="">Asignar a Cliente (Opcional)...</option></select>
+                            <input type="number" id="anio-v" placeholder="Año (ej. 2020)" required>
+                            <input type="text" id="placas-v" placeholder="Placas" required>
+                            <select id="cliente-v"><option value="">Asignar a Cliente...</option></select>
                             <button type="submit">Guardar Vehículo</button>
                         </form>
                     </div>
@@ -94,105 +109,108 @@
                             <input type="text" id="folio-o" placeholder="Folio (ej. 101)" required>
                             <input type="text" id="desc-o" placeholder="Descripción del trabajo" required>
                             <select id="estado-o">
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="En Proceso">En Proceso</option>
-                                <option value="Finalizado">Finalizado</option>
+                                <option value="recibido">Recibido</option>
+                                <option value="en_reparacion">En Reparación</option>
+                                <option value="terminado">Terminado</option>
                             </select>
-                            <select id="vehiculo-o"><option value="">Asignar a Vehículo (Opcional)...</option></select>
+                            <select id="vehiculo-o"><option value="">Asignar a Vehículo...</option></select>
                             <button type="submit">Generar Orden</button>
                         </form>
                     </div>
                 </div>
 
+                <!-- EMPLEADOS Y REFACCIONES -->
                 <div class="grid">
                     <div class="card">
-                        <h2>👨‍🔧 Registrar Empleado</h2>
+                        <div class="mode-toggle">
+                            <button type="button" id="tab-add-emp" class="active" onclick="cambiarModoEmpleado('add')">➕ Añadir</button>
+                            <button type="button" id="tab-edit-emp" onclick="cambiarModoEmpleado('edit')">✏️ Actualizar</button>
+                        </div>
+                        <h2 id="titulo-form-empleado" style="font-size: 18px;">👨‍🔧 Registrar Empleado</h2>
                         <form id="form-empleado">
+                            <input type="hidden" id="edit-id-empleado">
                             <input type="text" id="nombre-e" placeholder="Nombre completo" required>
                             <select id="puesto-e" required>
-                                <option value="">Selecciona el Puesto...</option>
+                                <option value="">Selecciona Puesto...</option>
                                 <option value="mecanico">Mecánico</option>
                                 <option value="recepcion">Recepción</option>
                                 <option value="gerente">Gerente</option>
-                                <option value="refacciones">Refacciones</option>
                             </select>
                             <input type="text" id="telefono-e" placeholder="Teléfono" required>
-                            <button type="submit">Guardar Empleado</button>
+                            <button type="submit" id="btn-guardar-empleado">Guardar Empleado</button>
                         </form>
                     </div>
                     <div class="card">
-                        <h2 id="titulo-form-refaccion">⚙️ Registrar Refacción</h2>
+                        <div class="mode-toggle">
+                            <button type="button" id="tab-add-ref" class="active" onclick="cambiarModoRef('add')">➕ Añadir</button>
+                            <button type="button" id="tab-edit-ref" onclick="cambiarModoRef('edit')">✏️ Actualizar</button>
+                        </div>
+                        <h2 id="titulo-form-refaccion" style="font-size: 18px;">⚙️ Registrar Refacción</h2>
                         <form id="form-refaccion">
                             <input type="hidden" id="edit-id-refaccion">
-                            <input type="text" id="nombre-r" placeholder="Nombre de la refacción" required>
+                            <input type="text" id="nombre-r" placeholder="Nombre de refacción" required>
                             <input type="number" step="0.01" id="precio-r" placeholder="Precio ($)" required>
-                            <input type="number" id="stock-r" placeholder="Stock disponible" required>
+                            <input type="number" id="stock-r" placeholder="Stock" required>
                             <button type="submit" id="btn-guardar-refaccion">Guardar Refacción</button>
                         </form>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h2 id="titulo-form-servicio">🛠️ Registrar Catálogo de Servicio</h2>
-                    <form id="form-servicio">
-                        <input type="hidden" id="edit-id-servicio">
-                        <div class="grid">
-                            <input type="text" id="nombre-s" placeholder="Nombre del servicio" required>
-                            <input type="number" step="0.01" id="costo-s" placeholder="Costo ($)" required>
-                        </div>
-                        <input type="text" id="desc-s" placeholder="Descripción breve del servicio" required>
-                        <button type="submit" id="btn-guardar-servicio">Guardar Servicio</button>
+                <!-- CAMBIAR CONTRASEÑA LOGIN -->
+                <div class="card" style="border-left: 5px solid var(--warning);">
+                    <h2>🔑 Cambiar Contraseña de Acceso</h2>
+                    <form id="form-cambiar-pass">
+                        <select id="select-usuario-pass" required><option value="">Seleccione Usuario...</option></select>
+                        <input type="password" id="nueva-pass" placeholder="Nueva Contraseña" required>
+                        <button type="submit" style="background-color: var(--warning);">Actualizar Credenciales</button>
                     </form>
                 </div>
+
             </div>
 
-            <!-- VISTA DE MECÁNICO -->
+            <!-- VISTAS ROL MECÁNICO Y CLIENTE -->
             <div id="vista-mecanico" class="oculto">
                 <div class="card">
                     <h2>👨‍🔧 Órdenes de Trabajo Asignadas</h2>
-                    <ul id="lista-ordenes-mecanico">Cargando órdenes...</ul>
+                    <ul id="lista-ordenes-mecanico">Cargando...</ul>
                 </div>
             </div>
 
-            <!-- VISTA DE CLIENTE -->
             <div id="vista-cliente" class="oculto">
-                <div class="card" style="border-left: 5px solid #10b981;">
+                <div class="card" style="border-left: 5px solid var(--success);">
                     <h2>🚗 Estado Actual de mi Vehículo</h2>
-                    <ul id="lista-vehiculos-cliente">Consultando historial...</ul>
+                    <ul id="lista-vehiculos-cliente">Consultando...</ul>
                 </div>
             </div>
 
-            <!-- SECCIONES GENERALES -->
+            <!-- LISTAS GENERALES -->
             <div class="card">
-                <h2>🚗 Vehículos Registrados en el Taller</h2>
-                <ul id="lista-vehiculos">Cargando vehículos...</ul>
+                <h2>🚗 Vehículos Registrados</h2>
+                <ul id="lista-vehiculos">Cargando...</ul>
             </div>
 
             <div class="card">
                 <h2>📋 Órdenes de Servicio Activas</h2>
-                <ul id="lista-ordenes">Cargando órdenes...</ul>
+                <ul id="lista-ordenes">Cargando...</ul>
             </div>
 
             <div class="grid">
                 <div class="card">
                     <h2>👨‍🔧 Empleados del Taller</h2>
-                    <ul id="lista-empleados">Cargando empleados...</ul>
+                    <ul id="lista-empleados">Cargando...</ul>
                 </div>
                 <div class="card">
                     <h2>⚙️ Inventario de Refacciones</h2>
-                    <ul id="lista-refacciones">Cargando refacciones...</ul>
+                    <ul id="lista-refacciones">Cargando...</ul>
                 </div>
-            </div>
-
-            <div class="card">
-                <h2>🛠️ Catálogo de Servicios</h2>
-                <ul id="lista-servicios">Cargando servicios...</ul>
             </div>
 
         </div>
     </div>
 
     <script>
+        let datosGlobales = { clientes: [], vehiculos: [], ordenes: [], empleados: [], refacciones: [] };
+
         document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
             const usuario = document.getElementById('usuario').value;
@@ -205,19 +223,17 @@
                     body: JSON.stringify({ usuario, password })
                 });
                 const data = await res.json();
-
                 if (data.exito) {
                     document.getElementById('seccion-login').classList.add('oculto');
                     document.getElementById('seccion-panel').classList.remove('oculto');
                     document.getElementById('saludo-usuario').innerText = `Usuario: ${data.nombre} (${data.rol.toUpperCase()})`;
-
                     aplicarPermisosRol(data.rol);
                     cargarDatos();
                 } else {
                     document.getElementById('error-login').innerText = data.mensaje;
                 }
             } catch (err) {
-                document.getElementById('error-login').innerText = 'Error al conectar con el servidor.';
+                document.getElementById('error-login').innerText = 'Error de conexión con el servidor.';
             }
         });
 
@@ -225,7 +241,6 @@
             document.getElementById('vista-admin').classList.add('oculto');
             document.getElementById('vista-mecanico').classList.add('oculto');
             document.getElementById('vista-cliente').classList.add('oculto');
-
             if (rol === 'administrador') document.getElementById('vista-admin').classList.remove('oculto');
             else if (rol === 'mecanico') document.getElementById('vista-mecanico').classList.remove('oculto');
             else if (rol === 'cliente') document.getElementById('vista-cliente').classList.remove('oculto');
@@ -235,346 +250,222 @@
             document.getElementById('seccion-panel').classList.add('oculto');
             document.getElementById('seccion-login').classList.remove('oculto');
             document.getElementById('form-login').reset();
-            document.getElementById('error-login').innerText = '';
+        }
+
+        // FUNCIONES DE CONTROL DE MODOS
+        function cambiarModoCliente(modo) {
+            if (modo === 'add') {
+                document.getElementById('edit-id-cliente').value = '';
+                document.getElementById('form-cliente').reset();
+                document.getElementById('titulo-form-cliente').innerText = "➕ Registrar Cliente";
+                document.getElementById('btn-guardar-cliente').innerText = "Guardar Cliente";
+                document.getElementById('tab-add-cliente').classList.add('active');
+                document.getElementById('tab-edit-cliente').classList.remove('active');
+            } else {
+                document.getElementById('tab-edit-cliente').classList.add('active');
+                document.getElementById('tab-add-cliente').classList.remove('active');
+            }
+        }
+
+        function cambiarModoEmpleado(modo) {
+            if (modo === 'add') {
+                document.getElementById('edit-id-empleado').value = '';
+                document.getElementById('form-empleado').reset();
+                document.getElementById('titulo-form-empleado').innerText = "👨‍🔧 Registrar Empleado";
+                document.getElementById('btn-guardar-empleado').innerText = "Guardar Empleado";
+                document.getElementById('tab-add-emp').classList.add('active');
+                document.getElementById('tab-edit-emp').classList.remove('active');
+            } else {
+                document.getElementById('tab-edit-emp').classList.add('active');
+                document.getElementById('tab-add-emp').classList.remove('active');
+            }
+        }
+
+        function cambiarModoRef(modo) {
+            if (modo === 'add') {
+                document.getElementById('edit-id-refaccion').value = '';
+                document.getElementById('form-refaccion').reset();
+                document.getElementById('titulo-form-refaccion').innerText = "⚙️ Registrar Refacción";
+                document.getElementById('btn-guardar-refaccion').innerText = "Guardar Refacción";
+                document.getElementById('tab-add-ref').classList.add('active');
+                document.getElementById('tab-edit-ref').classList.remove('active');
+            } else {
+                document.getElementById('tab-edit-ref').classList.add('active');
+                document.getElementById('tab-add-ref').classList.remove('active');
+            }
         }
 
         function prepararEdicionCliente(id, nombre, apellidos, telefono, correo) {
+            cambiarModoCliente('edit');
             document.getElementById('edit-id-cliente').value = id;
-            document.getElementById('nombre-c').value = nombre === 'undefined' ? '' : nombre;
-            document.getElementById('apellidos-c').value = apellidos === 'undefined' ? '' : apellidos;
-            document.getElementById('telefono-c').value = telefono === 'undefined' ? '' : telefono;
-            document.getElementById('correo-c').value = (correo === 'undefined' || correo === 'Sin correo') ? '' : correo;
+            document.getElementById('nombre-c').value = nombre;
+            document.getElementById('apellidos-c').value = apellidos;
+            document.getElementById('telefono-c').value = telefono;
+            document.getElementById('correo-c').value = correo;
             document.getElementById('titulo-form-cliente').innerText = "✏️ Actualizar Cliente";
-            document.getElementById('btn-guardar-cliente').innerText = "Actualizar Cliente";
+            document.getElementById('btn-guardar-cliente').innerText = "Actualizar Cambios";
+        }
+
+        function prepararEdicionEmpleado(id, nombre, puesto, telefono) {
+            cambiarModoEmpleado('edit');
+            document.getElementById('edit-id-empleado').value = id;
+            document.getElementById('nombre-e').value = nombre;
+            document.getElementById('puesto-e').value = puesto;
+            document.getElementById('telefono-e').value = telefono;
+            document.getElementById('titulo-form-empleado').innerText = "✏️ Actualizar Empleado";
+            document.getElementById('btn-guardar-empleado').innerText = "Actualizar Cambios";
         }
 
         function prepararEdicionRefaccion(id, nombre, precio, stock) {
+            cambiarModoRef('edit');
             document.getElementById('edit-id-refaccion').value = id;
             document.getElementById('nombre-r').value = nombre;
             document.getElementById('precio-r').value = precio;
             document.getElementById('stock-r').value = stock;
             document.getElementById('titulo-form-refaccion').innerText = "✏️ Actualizar Refacción";
-            document.getElementById('btn-guardar-refaccion').innerText = "Actualizar Refacción";
-        }
-
-        function prepararEdicionServicio(id, nombre, costo, descripcion) {
-            document.getElementById('edit-id-servicio').value = id;
-            document.getElementById('nombre-s').value = nombre;
-            document.getElementById('costo-s').value = costo;
-            document.getElementById('desc-s').value = descripcion === 'undefined' ? '' : descripcion;
-            document.getElementById('titulo-form-servicio').innerText = "✏️ Actualizar Servicio";
-            document.getElementById('btn-guardar-servicio').innerText = "Actualizar Servicio";
+            document.getElementById('btn-guardar-refaccion').innerText = "Actualizar Cambios";
         }
 
         async function eliminarRegistro(coleccion, id) {
-            if (!confirm("¿Estás seguro de eliminar este registro de la base de datos?")) return;
-
-            try {
-                const respuesta = await fetch(`/api/${coleccion}/${id}`, { method: 'DELETE' });
-                const resultado = await respuesta.json();
-                if (resultado.exito) {
-                    alert("¡Eliminado con éxito!");
-                    cargarDatos();
-                } else {
-                    alert("Error al eliminar: " + resultado.mensaje);
-                }
-            } catch (error) {
-                console.error("Error de red:", error);
-                alert("Error de conexión con el servidor");
-            }
+            if (!confirm("¿Estás seguro de eliminar este registro?")) return;
+            await fetch(`/api/${coleccion}/${id}`, { method: 'DELETE' });
+            cargarDatos();
         }
 
+        // CARGAR DATOS Y REFRESCAR DINÁMICAMENTE
         async function cargarDatos() {
+            const [resC, resV, resO, resE, resR, resUsr] = await Promise.all([
+                fetch('/api/clientes').then(r => r.json()),
+                fetch('/api/vehiculos').then(r => r.json()),
+                fetch('/api/ordenes').then(r => r.json()),
+                fetch('/api/empleados').then(r => r.json()),
+                fetch('/api/refacciones').then(r => r.json()),
+                fetch('/api/usuarios').then(r => r.json())
+            ]);
+
+            datosGlobales = { clientes: resC, vehiculos: resV, ordenes: resO, empleados: resE, refacciones: resR };
+            renderizarListas(datosGlobales);
+
+            // Poblar selectores de usuarios para cambio de contraseña
+            const selectUsr = document.getElementById('select-usuario-pass');
+            selectUsr.innerHTML = '<option value="">Seleccione Usuario...</option>';
+            resUsr.forEach(u => selectUsr.innerHTML += `<option value="${u._id}">${u.usuario} (${u.nombre})</option>`);
+        }
+
+        // RENDERIZAR LISTAS EN HTML
+        function renderizarListas({ clientes, vehiculos, ordenes, empleados, refacciones }) {
             // Clientes
-            fetch('/api/clientes')
-                .then(res => res.json())
-                .then(data => {
-                    const lista = document.getElementById('lista-clientes');
-                    const selectC = document.getElementById('cliente-v');
-                    if(lista) {
-                        lista.innerHTML = data.length === 0 ? '<li>No hay clientes.</li>' : '';
-                        if(selectC) selectC.innerHTML = '<option value="">Asignar a Cliente (Opcional)...</option>';
-                        data.forEach(c => {
-                            const tel = c.telefono || '';
-                            const corr = c.correo || '';
-                            lista.innerHTML += `
-                                <li>
-                                    <div class="info-content"><strong>${c.nombre} ${c.apellidos}</strong><br>📞 ${tel || 'Sin teléfono'} | ✉️ ${corr || 'Sin correo'}</div>
-                                    <div class="action-buttons">
-                                        <button class="btn-editar" onclick="prepararEdicionCliente('${c._id}', '${c.nombre}', '${c.apellidos}', '${tel}', '${corr}')">Editar</button>
-                                        <button class="btn-eliminar" onclick="eliminarRegistro('clientes', '${c._id}')">Eliminar</button>
-                                    </div>
-                                </li>`;
-                            if(selectC) selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
-                        });
-                    }
-                });
+            const listaC = document.getElementById('lista-clientes');
+            const selectC = document.getElementById('cliente-v');
+            listaC.innerHTML = clientes.length === 0 ? '<li>No hay clientes.</li>' : '';
+            selectC.innerHTML = '<option value="">Asignar a Cliente...</option>';
+            clientes.forEach(c => {
+                listaC.innerHTML += `<li><div><strong>${c.nombre} ${c.apellidos}</strong><br>📞 ${c.telefono} | ✉️ ${c.correo}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionCliente('${c._id}', '${c.nombre}', '${c.apellidos}', '${c.telefono}', '${c.correo}')">Editar</button><button class="btn-eliminar" onclick="eliminarRegistro('clientes', '${c._id}')">Eliminar</button></div></li>`;
+                selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
+            });
 
             // Vehículos
-            fetch('/api/vehiculos')
-                .then(res => res.json())
-                .then(data => {
-                    const lista = document.getElementById('lista-vehiculos');
-                    const listaCliente = document.getElementById('lista-vehiculos-cliente');
-                    const selectV = document.getElementById('vehiculo-o');
-                    if(lista) {
-                        lista.innerHTML = data.length === 0 ? '<li>No hay vehículos registrados.</li>' : '';
-                        if(selectV) selectV.innerHTML = '<option value="">Asignar a Vehículo (Opcional)...</option>';
-                        data.forEach(v => {
-                            lista.innerHTML += `
-                                <li>
-                                    <div class="info-content">🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> (${v.año || v.anio || ''}) - Placas: <code>${v.placa || v.placas || 'N/A'}</code></div>
-                                    <div class="action-buttons">
-                                        <button class="btn-eliminar" onclick="eliminarRegistro('vehiculos', '${v._id}')">Eliminar</button>
-                                    </div>
-                                </li>`;
-                            if(selectV) selectV.innerHTML += `<option value="${v._id}">${v.marca} ${v.modelo} (${v.placa || v.placas || 'Sin placa'})</option>`;
-                        });
-                    }
-                    if(listaCliente) {
-                        listaCliente.innerHTML = data.length === 0 ? '<li>No hay vehículos asociados en revisión.</li>' : '';
-                        data.forEach(v => {
-                            listaCliente.innerHTML += `
-                                <li>
-                                    <div class="info-content">🚗 <strong>${v.marca || ''} ${v.modelo || ''}</strong> (${v.año || v.anio || ''})<br>📌 Estado: <b style="color: #2563eb;">En Diagnóstico y Reparación</b><br>📝 Placas: <code>${v.placa || v.placas || 'N/A'}</code></div>
-                                </li>`;
-                        });
-                    }
+            const listaV = document.getElementById('lista-vehiculos');
+            const selectV = document.getElementById('vehiculo-o');
+            listaV.innerHTML = vehiculos.length === 0 ? '<li>No hay vehículos.</li>' : '';
+            selectV.innerHTML = '<option value="">Asignar a Vehículo...</option>';
+            vehiculos.forEach(v => {
+                listaV.innerHTML += `<li><div>🚗 <strong>${v.marca} ${v.modelo}</strong> (${v.año}) - Placas: ${v.placas}</div><div class="action-buttons"><button class="btn-eliminar" onclick="eliminarRegistro('vehiculos', '${v._id}')">Eliminar</button></div></li>`;
+                selectV.innerHTML += `<option value="${v._id}">${v.marca} ${v.modelo} (${v.placas})</option>`;
+            });
+
+            // Órdenes
+            const listaO = document.getElementById('lista-ordenes');
+            const mecanicos = empleados.filter(e => e.puesto === 'mecanico');
+            listaO.innerHTML = ordenes.length === 0 ? '<li>No hay órdenes.</li>' : '';
+            ordenes.forEach(o => {
+                let optionsMec = '<option value="">Asignar mecánico...</option>';
+                mecanicos.forEach(m => {
+                    let sel = o.mecanico_asignado === m.nombre ? 'selected' : '';
+                    optionsMec += `<option value="${m.nombre}" ${sel}>${m.nombre}</option>`;
                 });
 
-            // Órdenes de Servicio (Con asignación de mecánico y cambio de estados dinámico)
-            try {
-                let ordenesRes = await fetch('/api/ordenes');
-                let data = await ordenesRes.json();
-
-                let empleadosRes = await fetch('/api/empleados');
-                let empleados = await empleadosRes.json();
-                let opcionesMecanicos = empleados.filter(e => e.puesto === 'mecanico' || e.puesto === 'Mecánico');
-
-                const lista = document.getElementById('lista-ordenes');
-                const listaMecanico = document.getElementById('lista-ordenes-mecanico');
-                
-                if(lista) {
-                    lista.innerHTML = data.length === 0 ? '<li>No hay órdenes activas.</li>' : '';
-                    data.forEach(o => {
-                        let selectMecanicoHtml = `<select id="mecanico-select-${o._id}" style="font-size:11px; padding:4px; margin-bottom:4px;">
-                            <option value="">Asignar mecánico...</option>`;
-                        opcionesMecanicos.forEach(m => {
-                            let nombreMec = m.nombre_completo || m.nombre;
-                            let seleccionado = o.mecanico_asignado === nombreMec ? 'selected' : '';
-                            selectMecanicoHtml += `<option value="${nombreMec}" ${seleccionado}>${nombreMec}</option>`;
-                        });
-                        selectMecanicoHtml += `</select>`;
-
-                        lista.innerHTML += `
-                            <li>
-                                <div class="info-content">
-                                    🔧 <strong>Orden #${o.folio}</strong> - Estado: <b style="color: #2563eb;">${o.estado}</b><br>
-                                    📝 ${o.descripcion}<br>
-                                    👨‍🔧 Mecánico: <b>${o.mecanico_asignado || 'Sin asignar'}</b>
-                                </div>
-                                <div class="action-buttons" style="flex-direction: column; gap: 4px; min-width: 150px;">
-                                    ${selectMecanicoHtml}
-                                    <button class="btn-editar" style="background-color: #3b82f6; font-size:11px; padding:4px;" onclick="asignarMecanicoOrden('${o._id}')">Asignar</button>
-                                    <button class="btn-editar" style="background-color: #f59e0b; font-size:11px; padding:4px;" onclick="actualizarEstadoOrden('${o._id}', 'en_reparacion')">En Reparación</button>
-                                    <button class="btn-editar" style="background-color: #10b981; font-size:11px; padding:4px;" onclick="actualizarEstadoOrden('${o._id}', 'terminado')">Validar / Finalizar</button>
-                                    <button class="btn-eliminar" style="font-size:11px; padding:4px;" onclick="eliminarRegistro('ordenes', '${o._id}')">Eliminar</button>
-                                </div>
-                            </li>`;
-                    });
-                }
-                
-                if(listaMecanico) {
-                    listaMecanico.innerHTML = data.length === 0 ? '<li>No hay órdenes asignadas.</li>' : '';
-                    data.forEach(o => {
-                        listaMecanico.innerHTML += `
-                            <li>
-                                <div class="info-content">
-                                    🔧 <strong>Orden #${o.folio}</strong> - Estado actual: <b>${o.estado}</b><br>
-                                    📝 ${o.descripcion}<br>
-                                    👨‍🔧 Mecánico: <b>${o.mecanico_asignado || 'Sin asignar'}</b>
-                                </div>
-                                <div class="action-buttons">
-                                    <button class="btn-editar" style="background-color: #10b981;" onclick="actualizarEstadoOrden('${o._id}', 'terminado')">Marcar Terminado</button>
-                                </div>
-                            </li>`;
-                    });
-                }
-            } catch (e) {
-                console.error("Error al cargar órdenes:", e);
-            }
+                listaO.innerHTML += `<li>
+                    <div class="info-content">🔧 <strong>Folio #${o.folio}</strong> - Estado: <b>${o.estado}</b><br>📝 ${o.descripcion}<br>👨‍🔧 Mecánico: <b>${o.mecanico_asignado || 'Sin asignar'}</b></div>
+                    <div class="action-buttons" style="flex-direction: column; gap:4px;">
+                        <select onchange="asignarMecanico('${o._id}', this.value)" style="font-size:11px; padding:2px;">${optionsMec}</select>
+                        <button class="btn-editar" style="background:var(--success); font-size:11px;" onclick="cambiarEstadoOrden('${o._id}', 'terminado')">Validar / Finalizar</button>
+                        <button class="btn-eliminar" style="font-size:11px;" onclick="eliminarRegistro('ordenes', '${o._id}')">Eliminar</button>
+                    </div>
+                </li>`;
+            });
 
             // Empleados
-            fetch('/api/empleados')
-                .then(res => res.json())
-                .then(data => {
-                    const lista = document.getElementById('lista-empleados');
-                    if(lista) {
-                        lista.innerHTML = data.length === 0 ? '<li>No hay empleados registrados.</li>' : '';
-                        data.forEach(e => {
-                            lista.innerHTML += `
-                                <li>
-                                    <div class="info-content">👨‍🔧 <strong>${e.nombre_completo || e.nombre}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono || 'S/N'}</div>
-                                    <div class="action-buttons">
-                                        <button class="btn-eliminar" onclick="eliminarRegistro('empleados', '${e._id}')">Eliminar</button>
-                                    </div>
-                                </li>`;
-                        });
-                    }
-                });
+            const listaE = document.getElementById('lista-empleados');
+            listaE.innerHTML = empleados.length === 0 ? '<li>No hay empleados.</li>' : '';
+            empleados.forEach(e => {
+                const nombreComp = e.nombre_completo || e.nombre;
+                listaE.innerHTML += `<li><div>👨‍🔧 <strong>${nombreComp}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionEmpleado('${e._id}', '${nombreComp}', '${e.puesto}', '${e.telefono}')">Editar</button><button class="btn-eliminar" onclick="eliminarRegistro('empleados', '${e._id}')">Eliminar</button></div></li>`;
+            });
 
             // Refacciones
-            fetch('/api/refacciones')
-                .then(res => res.json())
-                .then(data => {
-                    const lista = document.getElementById('lista-refacciones');
-                    if(lista) {
-                        lista.innerHTML = data.length === 0 ? '<li>No hay refacciones en inventario.</li>' : '';
-                        data.forEach(r => {
-                            const pVal = r.precio_venta || r.precio || 0;
-                            const stockVal = r.stock || 0;
-                            lista.innerHTML += `
-                                <li>
-                                    <div class="info-content">⚙️ <strong>${r.nombre}</strong><br>💲 Precio: $${pVal} | 📦 Stock: ${stockVal} unidades</div>
-                                    <div class="action-buttons">
-                                        <button class="btn-editar" onclick="prepararEdicionRefaccion('${r._id}', '${r.nombre}', '${pVal}', '${stockVal}')">Editar</button>
-                                        <button class="btn-eliminar" onclick="eliminarRegistro('refacciones', '${r._id}')">Eliminar</button>
-                                    </div>
-                                </li>`;
-                        });
-                    }
-                });
-
-            // Servicios
-            fetch('/api/servicios')
-                .then(res => res.json())
-                .then(data => {
-                    const lista = document.getElementById('lista-servicios');
-                    if(lista) {
-                        lista.innerHTML = data.length === 0 ? '<li>No hay servicios registrados.</li>' : '';
-                        data.forEach(s => {
-                            const costoVal = s.precio_base || s.costo || 0;
-                            const descVal = s.descripcion || '';
-                            lista.innerHTML += `
-                                <li>
-                                    <div class="info-content">🛠️ <strong>${s.nombre}</strong> (Costo: $${costoVal})<br>📝 ${descVal}</div>
-                                    <div class="action-buttons">
-                                        <button class="btn-editar" onclick="prepararEdicionServicio('${s._id}', '${s.nombre}', '${costoVal}', '${descVal}')">Editar</button>
-                                        <button class="btn-eliminar" onclick="eliminarRegistro('servicios', '${s._id}')">Eliminar</button>
-                                    </div>
-                                </li>`;
-                        });
-                    }
-                });
+            const listaR = document.getElementById('lista-refacciones');
+            listaR.innerHTML = refacciones.length === 0 ? '<li>No hay refacciones.</li>' : '';
+            refacciones.forEach(r => {
+                listaR.innerHTML += `<li><div>⚙️ <strong>${r.nombre}</strong> - $${r.precio} (Stock: ${r.stock})</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionRefaccion('${r._id}', '${r.nombre}', '${r.precio}', '${r.stock}')">Editar</button><button class="btn-eliminar" onclick="eliminarRegistro('refacciones', '${r._id}')">Eliminar</button></div></li>`;
+            });
         }
 
-        // Funciones para gestionar estados y asignación de mecánicos
-        async function actualizarEstadoOrden(id, nuevoEstado) {
-            try {
-                const res = await fetch(`/api/ordenes/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ estado: nuevoEstado })
-                });
-                const resultado = await res.json();
-                if (resultado.exito) {
-                    alert("¡Estado de la orden actualizado y validado con éxito!");
-                    cargarDatos();
-                } else {
-                    alert("Error al actualizar el estado.");
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Error de conexión con el servidor.");
-            }
+        // BÚSQUEDA DINÁMICA EN TIEMPO REAL
+        function filtrarRegistros() {
+            const texto = document.getElementById('input-busqueda').value.toLowerCase();
+            const filtrados = {
+                clientes: datosGlobales.clientes.filter(c => `${c.nombre} ${c.apellidos} ${c.correo}`.toLowerCase().includes(texto)),
+                vehiculos: datosGlobales.vehiculos.filter(v => `${v.marca} ${v.modelo} ${v.placas}`.toLowerCase().includes(texto)),
+                ordenes: datosGlobales.ordenes.filter(o => `${o.folio} ${o.descripcion} ${o.mecanico_asignado}`.toLowerCase().includes(texto)),
+                empleados: datosGlobales.empleados.filter(e => `${e.nombre} ${e.puesto}`.toLowerCase().includes(texto)),
+                refacciones: datosGlobales.refacciones.filter(r => `${r.nombre}`.toLowerCase().includes(texto))
+            };
+            renderizarListas(filtrados);
         }
 
-        async function asignarMecanicoOrden(id) {
-            const selectMec = document.getElementById(`mecanico-select-${id}`);
-            const mecanicoElegido = selectMec ? selectMec.value : "";
-
-            if (!mecanicoElegido) {
-                alert("Por favor seleccione un mecánico disponible de la lista.");
-                return;
-            }
-
-            try {
-                const res = await fetch(`/api/ordenes/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        mecanico_asignado: mecanicoElegido,
-                        estado: "en_reparacion" 
-                    })
-                });
-                const resultado = await res.json();
-                if (resultado.exito) {
-                    alert(`¡Mecánico ${mecanicoElegido} asignado correctamente!`);
-                    cargarDatos();
-                } else {
-                    alert("Error al asignar el mecánico.");
-                }
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Error de conexión con el servidor.");
-            }
+        async function cambiarEstadoOrden(id, estado) {
+            await fetch(`/api/ordenes/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado }) });
+            cargarDatos();
         }
 
-        // Formularios (POST / PUT)
+        async function asignarMecanico(id, mecanico) {
+            await fetch(`/api/ordenes/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mecanico_asignado: mecanico, estado: 'en_reparacion' }) });
+            cargarDatos();
+        }
+
+        // FORMULARIOS DE REGISTRO / ACTUALIZACIÓN
         document.getElementById('form-cliente').addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('edit-id-cliente').value;
-            const datos = { 
-                nombre: document.getElementById('nombre-c').value, 
-                apellidos: document.getElementById('apellidos-c').value, 
-                telefono: document.getElementById('telefono-c').value, 
-                correo: document.getElementById('correo-c').value 
-            };
-            
-            const url = id ? `/api/clientes/${id}` : '/api/clientes';
-            const metodo = id ? 'PUT' : 'POST';
-
-            try {
-                const res = await fetch(url, { method: metodo, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-                const resultado = await res.json();
-                alert(resultado.mensaje || "Operación exitosa");
-                e.target.reset();
-                document.getElementById('edit-id-cliente').value = '';
-                document.getElementById('titulo-form-cliente').innerText = "➕ Agregar Nuevo Cliente";
-                document.getElementById('btn-guardar-cliente').innerText = "Guardar Cliente";
-                cargarDatos();
-            } catch (err) {
-                alert("Error al procesar la solicitud del cliente.");
-            }
+            const datos = { nombre: document.getElementById('nombre-c').value, apellidos: document.getElementById('apellidos-c').value, telefono: document.getElementById('telefono-c').value, correo: document.getElementById('correo-c').value };
+            await fetch(id ? `/api/clientes/${id}` : '/api/clientes', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            cambiarModoCliente('add');
+            cargarDatos();
         });
 
         document.getElementById('form-vehiculo').addEventListener('submit', async e => {
             e.preventDefault();
-            const nuevoV = { marca: document.getElementById('marca-v').value, modelo: document.getElementById('modelo-v').value, año: document.getElementById('anio-v').value, placas: document.getElementById('placas-v').value, cliente_id: document.getElementById('cliente-v').value };
-            const res = await fetch('/api/vehiculos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevoV) });
-            const resultado = await res.json();
-            alert(resultado.mensaje);
+            const datos = { marca: document.getElementById('marca-v').value, modelo: document.getElementById('modelo-v').value, año: document.getElementById('anio-v').value, placas: document.getElementById('placas-v').value, cliente_id: document.getElementById('cliente-v').value };
+            await fetch('/api/vehiculos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
             e.target.reset();
             cargarDatos();
         });
 
         document.getElementById('form-orden').addEventListener('submit', async e => {
             e.preventDefault();
-            const nuevaO = { folio: document.getElementById('folio-o').value, descripcion: document.getElementById('desc-o').value, estado: document.getElementById('estado-o').value, vehiculo_id: document.getElementById('vehiculo-o').value };
-            const res = await fetch('/api/ordenes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevaO) });
-            const resultado = await res.json();
-            alert(resultado.mensaje);
+            const datos = { folio: document.getElementById('folio-o').value, descripcion: document.getElementById('desc-o').value, estado: document.getElementById('estado-o').value, vehiculo_id: document.getElementById('vehiculo-o').value };
+            await fetch('/api/ordenes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
             e.target.reset();
             cargarDatos();
         });
 
         document.getElementById('form-empleado').addEventListener('submit', async e => {
             e.preventDefault();
-            const nuevoE = { nombre: document.getElementById('nombre-e').value, puesto: document.getElementById('puesto-e').value, telefono: document.getElementById('telefono-e').value };
-            const res = await fetch('/api/empleados', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevoE) });
-            const resultado = await res.json();
-            alert(resultado.mensaje);
-            e.target.reset();
+            const id = document.getElementById('edit-id-empleado').value;
+            const datos = { nombre: document.getElementById('nombre-e').value, puesto: document.getElementById('puesto-e').value, telefono: document.getElementById('telefono-e').value };
+            await fetch(id ? `/api/empleados/${id}` : '/api/empleados', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            cambiarModoEmpleado('add');
             cargarDatos();
         });
 
@@ -582,44 +473,20 @@
             e.preventDefault();
             const id = document.getElementById('edit-id-refaccion').value;
             const datos = { nombre: document.getElementById('nombre-r').value, precio: document.getElementById('precio-r').value, stock: document.getElementById('stock-r').value };
-            
-            const url = id ? `/api/refacciones/${id}` : '/api/refacciones';
-            const metodo = id ? 'PUT' : 'POST';
-
-            try {
-                const res = await fetch(url, { method: metodo, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-                const resultado = await res.json();
-                alert(resultado.mensaje || "Operación exitosa");
-                e.target.reset();
-                document.getElementById('edit-id-refaccion').value = '';
-                document.getElementById('titulo-form-refaccion').innerText = "⚙️ Registrar Refacción";
-                document.getElementById('btn-guardar-refaccion').innerText = "Guardar Refacción";
-                cargarDatos();
-            } catch (err) {
-                alert("Error al procesar la refacción.");
-            }
+            await fetch(id ? `/api/refacciones/${id}` : '/api/refacciones', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            cambiarModoRef('add');
+            cargarDatos();
         });
 
-        document.getElementById('form-servicio').addEventListener('submit', async e => {
+        document.getElementById('form-cambiar-pass').addEventListener('submit', async e => {
             e.preventDefault();
-            const id = document.getElementById('edit-id-servicio').value;
-            const datos = { nombre: document.getElementById('nombre-s').value, costo: document.getElementById('costo-s').value, descripcion: document.getElementById('desc-s').value };
-            
-            const url = id ? `/api/servicios/${id}` : '/api/servicios';
-            const metodo = id ? 'PUT' : 'POST';
-
-            try {
-                const res = await fetch(url, { method: metodo, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-                const resultado = await res.json();
-                alert(resultado.mensaje || "Operación exitosa");
-                e.target.reset();
-                document.getElementById('edit-id-servicio').value = '';
-                document.getElementById('titulo-form-servicio').innerText = "🛠️ Registrar Catálogo de Servicio";
-                document.getElementById('btn-guardar-servicio').innerText = "Guardar Servicio";
-                cargarDatos();
-            } catch (err) {
-                alert("Error al procesar el servicio.");
-            }
+            const userId = document.getElementById('select-usuario-pass').value;
+            const nuevaPassword = document.getElementById('nueva-pass').value;
+            if (!userId) return alert("Seleccione un usuario");
+            const res = await fetch(`/api/usuarios/${userId}/password`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nuevaPassword }) });
+            const data = await res.json();
+            alert(data.mensaje);
+            e.target.reset();
         });
     </script>
 </body>
