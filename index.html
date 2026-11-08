@@ -172,24 +172,36 @@
                 </div>
             </div>
 
-            <!-- LISTAS GENERALES -->
+            <!-- LISTAS GENERALES CON BOTONES UNIFICADOS Y SELECTOR DE ELIMINACIÓN -->
             <div class="card">
-                <h2>🚗 Vehículos Registrados</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>🚗 Vehículos Registrados</h2>
+                    <button class="btn-eliminar" onclick="abrirSelectorEliminar('vehiculos')" style="width: auto;">🗑️ Eliminar Vehículo</button>
+                </div>
                 <ul id="lista-vehiculos">Cargando...</ul>
             </div>
 
             <div class="card">
-                <h2>📋 Órdenes de Servicio Activas</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>📋 Órdenes de Servicio Activas</h2>
+                    <button class="btn-eliminar" onclick="abrirSelectorEliminar('ordenes')" style="width: auto;">🗑️ Eliminar Orden</button>
+                </div>
                 <ul id="lista-ordenes">Cargando...</ul>
             </div>
 
             <div class="grid">
                 <div class="card">
-                    <h2>👨‍🔧 Empleados del Taller</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2>👨‍🔧 Empleados</h2>
+                        <button class="btn-eliminar" onclick="abrirSelectorEliminar('empleados')" style="width: auto;">🗑️ Eliminar</button>
+                    </div>
                     <ul id="lista-empleados">Cargando...</ul>
                 </div>
                 <div class="card">
-                    <h2>⚙️ Inventario de Refacciones</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2>⚙️ Refacciones</h2>
+                        <button class="btn-eliminar" onclick="abrirSelectorEliminar('refacciones')" style="width: auto;">🗑️ Eliminar</button>
+                    </div>
                     <ul id="lista-refacciones">Cargando...</ul>
                 </div>
             </div>
@@ -211,9 +223,24 @@
         </div>
     </div>
 
+    <!-- MODAL SELECCIONAR PARA ELIMINAR -->
+    <div id="modal-eliminar" class="oculto" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="card" style="width: 100%; max-width: 380px; margin: 0; border-left: 5px solid var(--danger);">
+            <h2 id="titulo-modal-eliminar" style="font-size: 16px;">🗑️ Seleccionar elemento a eliminar</h2>
+            <select id="select-item-eliminar" style="margin-top: 15px;">
+                <option value="">Seleccione...</option>
+            </select>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button type="button" onclick="ejecutarEliminacionSeleccionada()" style="background: var(--danger);">Eliminar Definitivamente</button>
+                <button type="button" onclick="cerrarModalEliminar()" style="background: #64748b;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let datosGlobales = { clientes: [], vehiculos: [], ordenes: [], empleados: [], refacciones: [] };
         let usuarioLogueado = null;
+        let coleccionActualEliminar = '';
 
         document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -348,10 +375,49 @@
             document.getElementById('btn-guardar-refaccion').innerText = "Actualizar Cambios";
         }
 
-        async function eliminarRegistro(coleccion, id) {
-            if (!confirm("¿Estás seguro de eliminar este registro?")) return;
-            await fetch(`/api/${coleccion}/${id}`, { method: 'DELETE' });
-            cargarDatos();
+        // FUNCIONES DE SELECCIÓN PARA ELIMINAR
+        function abrirSelectorEliminar(coleccion) {
+            coleccionActualEliminar = coleccion;
+            const select = document.getElementById('select-item-eliminar');
+            select.innerHTML = '<option value="">Seleccione el registro...</option>';
+
+            const listaDatos = datosGlobales[coleccion] || [];
+
+            listaDatos.forEach(item => {
+                let texto = item.nombre ? `${item.nombre} ${item.apellidos || ''}` : (item.folio ? `Folio #${item.folio} - ${item.descripcion}` : (item.marca ? `${item.marca} ${item.modelo} (${item.placas})` : item.sku));
+                select.innerHTML += `<option value="${item._id}">${texto}</option>`;
+            });
+
+            document.getElementById('modal-eliminar').classList.remove('oculto');
+        }
+
+        function cerrarModalEliminar() {
+            document.getElementById('modal-eliminar').classList.add('oculto');
+        }
+
+        async function ejecutarEliminacionSeleccionada() {
+            const idSeleccionado = document.getElementById('select-item-eliminar').value;
+            if (!idSeleccionado) return alert("Por favor seleccione un elemento de la lista.");
+
+            if (!confirm("¿Estás seguro de eliminar este registro de la base de datos?")) return;
+
+            try {
+                let endpoint = coleccionActualEliminar;
+                if (endpoint === 'ordenes') endpoint = 'ordenes';
+
+                const res = await fetch(`/api/${endpoint}/${idSeleccionado}`, { method: 'DELETE' });
+                const data = await res.json();
+                
+                if (data.exito || data) {
+                    alert("¡Registro eliminado con éxito!");
+                    cerrarModalEliminar();
+                    cargarDatos();
+                } else {
+                    alert("Error al intentar eliminar el registro.");
+                }
+            } catch (err) {
+                alert("Error de conexión con el servidor.");
+            }
         }
 
         async function cargarDatos() {
@@ -373,7 +439,7 @@
             listaC.innerHTML = clientes.length === 0 ? '<li>No hay clientes.</li>' : '';
             selectC.innerHTML = '<option value="">Asignar a Cliente...</option>';
             clientes.forEach(c => {
-                listaC.innerHTML += `<li><div><strong>${c.nombre} ${c.apellidos}</strong><br>📞 ${c.telefono} | ✉️ ${c.correo}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionCliente('${c._id}', '${c.nombre}', '${c.apellidos}', '${c.telefono}', '${c.correo}')">Editar</button><button class="btn-eliminar" onclick="eliminarRegistro('clientes', '${c._id}')">Eliminar</button></div></li>`;
+                listaC.innerHTML += `<li><div><strong>${c.nombre} ${c.apellidos}</strong><br>📞 ${c.telefono} | ✉️ ${c.correo}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionCliente('${c._id}', '${c.nombre}', '${c.apellidos}', '${c.telefono}', '${c.correo}')">Actualizar</button></div></li>`;
                 selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
             });
 
@@ -382,7 +448,7 @@
             listaV.innerHTML = vehiculos.length === 0 ? '<li>No hay vehículos.</li>' : '';
             selectV.innerHTML = '<option value="">Asignar a Vehículo...</option>';
             vehiculos.forEach(v => {
-                listaV.innerHTML += `<li><div>🚗 <strong>${v.marca} ${v.modelo}</strong> (${v.año}) - Placas: ${v.placas}</div><div class="action-buttons"><button class="btn-eliminar" onclick="eliminarRegistro('vehiculos', '${v._id}')">Eliminar</button></div></li>`;
+                listaV.innerHTML += `<li><div>🚗 <strong>${v.marca} ${v.modelo}</strong> (${v.año}) - Placas: ${v.placas}</div></li>`;
                 selectV.innerHTML += `<option value="${v._id}">${v.marca} ${v.modelo} (${v.placas})</option>`;
             });
 
@@ -400,7 +466,6 @@
                     <div class="action-buttons" style="flex-direction: column; gap:4px;">
                         <select onchange="asignarMecanico('${o._id}', this.value)" style="font-size:11px; padding:2px;">${optionsMec}</select>
                         <button class="btn-editar" style="background:var(--success); font-size:11px;" onclick="cambiarEstadoOrden('${o._id}', 'terminado')">Validar / Finalizar</button>
-                        <button class="btn-eliminar" style="font-size:11px;" onclick="eliminarRegistro('ordenes', '${o._id}')">Eliminar</button>
                     </div>
                 </li>`;
             });
@@ -409,13 +474,13 @@
             listaE.innerHTML = empleados.length === 0 ? '<li>No hay empleados.</li>' : '';
             empleados.forEach(e => {
                 const nombreComp = e.nombre_completo || e.nombre;
-                listaE.innerHTML += `<li><div>👨‍🔧 <strong>${nombreComp}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionEmpleado('${e._id}', '${nombreComp}', '${e.puesto}', '${e.telefono}')">Editar</button><button class="btn-eliminar" onclick="eliminarRegistro('empleados', '${e._id}')">Eliminar</button></div></li>`;
+                listaE.innerHTML += `<li><div>👨‍🔧 <strong>${nombreComp}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionEmpleado('${e._id}', '${nombreComp}', '${e.puesto}', '${e.telefono}')">Actualizar</button></div></li>`;
             });
 
             const listaR = document.getElementById('lista-refacciones');
             listaR.innerHTML = refacciones.length === 0 ? '<li>No hay refacciones.</li>' : '';
             refacciones.forEach(r => {
-                listaR.innerHTML += `<li><div>⚙️ <strong>${r.nombre}</strong> - $${r.precio} (Stock: ${r.stock})</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionRefaccion('${r._id}', '${r.nombre}', '${r.precio}', '${r.stock}')">Editar</button><button class="btn-eliminar" onclick="eliminarRegistro('refacciones', '${r._id}')">Eliminar</button></div></li>`;
+                listaR.innerHTML += `<li><div>⚙️ <strong>${r.nombre}</strong> - $${r.precio} (Stock: ${r.stock})</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionRefaccion('${r._id}', '${r.nombre}', '${r.precio}', '${r.stock}')">Actualizar</button></div></li>`;
             });
         }
 
