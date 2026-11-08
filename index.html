@@ -24,7 +24,6 @@
         .login-box { max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .oculto { display: none !important; }
         .user-info { display: flex; justify-content: space-between; align-items: center; background: #334155; color: white; padding: 10px 20px; }
-        .user-info button { width: auto; background: var(--danger); margin: 0; padding: 5px 15px; }
         .search-bar { margin-bottom: 15px; background: #e2e8f0; padding: 8px; border-radius: 6px; }
         .mode-toggle { display: flex; gap: 10px; margin-bottom: 15px; }
         .mode-toggle button { background: #cbd5e1; color: #333; }
@@ -36,7 +35,7 @@
     <!-- LOGIN -->
     <div id="seccion-login" class="login-box">
         <h2>🔐 Iniciar Sesión</h2>
-        <p style="font-size: 13px; color: #64748b;">Acceso al sistema: <b>admin / 123</b></p>
+        <p style="font-size: 13px; color: #64748b;">Acceso: <b>admin / 123</b></p>
         <form id="form-login">
             <input type="text" id="usuario" placeholder="Usuario" required>
             <input type="password" id="password" placeholder="Contraseña" required>
@@ -54,7 +53,10 @@
 
         <div class="user-info">
             <span id="saludo-usuario">Bienvenido</span>
-            <button onclick="cerrarSesion()">Cerrar Sesión</button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="abrirModalPassword()" style="background: var(--warning); padding: 5px 12px; margin: 0; width: auto;">🔑 Cambiar Contraseña</button>
+                <button onclick="cerrarSesion()" style="background: var(--danger); padding: 5px 12px; margin: 0; width: auto;">Cerrar Sesión</button>
+            </div>
         </div>
 
         <div class="container">
@@ -67,7 +69,6 @@
             <!-- VISTA DE ADMINISTRADOR -->
             <div id="vista-admin" class="oculto">
                 
-                <!-- GESTIÓN DE CLIENTES -->
                 <div class="grid">
                     <div class="card">
                         <h2>👥 Clientes Registrados</h2>
@@ -75,7 +76,7 @@
                     </div>
                     <div class="card">
                         <div class="mode-toggle">
-                            <button type="button" id="tab-add-cliente" class="active" onclick="cambiarModoCliente('add')">➕ Añadir Nuevo</button>
+                            <button type="button" id="tab-add-cliente" class="active" onclick="cambiarModoCliente('add')">➕ Añadir</button>
                             <button type="button" id="tab-edit-cliente" onclick="cambiarModoCliente('edit')">✏️ Actualizar</button>
                         </div>
                         <h2 id="titulo-form-cliente" style="font-size: 18px;">➕ Registrar Cliente</h2>
@@ -90,14 +91,13 @@
                     </div>
                 </div>
 
-                <!-- VEHÍCULOS Y ÓRDENES -->
                 <div class="grid">
                     <div class="card">
                         <h2>🚗 Registrar Vehículo</h2>
                         <form id="form-vehiculo">
-                            <input type="text" id="marca-v" placeholder="Marca (ej. Ford)" required>
-                            <input type="text" id="modelo-v" placeholder="Modelo (ej. Focus)" required>
-                            <input type="number" id="anio-v" placeholder="Año (ej. 2020)" required>
+                            <input type="text" id="marca-v" placeholder="Marca" required>
+                            <input type="text" id="modelo-v" placeholder="Modelo" required>
+                            <input type="number" id="anio-v" placeholder="Año" required>
                             <input type="text" id="placas-v" placeholder="Placas" required>
                             <select id="cliente-v"><option value="">Asignar a Cliente...</option></select>
                             <button type="submit">Guardar Vehículo</button>
@@ -106,7 +106,7 @@
                     <div class="card">
                         <h2>📋 Crear Orden de Servicio</h2>
                         <form id="form-orden">
-                            <input type="text" id="folio-o" placeholder="Folio (ej. 101)" required>
+                            <input type="text" id="folio-o" placeholder="Folio" required>
                             <input type="text" id="desc-o" placeholder="Descripción del trabajo" required>
                             <select id="estado-o">
                                 <option value="recibido">Recibido</option>
@@ -119,7 +119,6 @@
                     </div>
                 </div>
 
-                <!-- EMPLEADOS Y REFACCIONES -->
                 <div class="grid">
                     <div class="card">
                         <div class="mode-toggle">
@@ -148,22 +147,12 @@
                         <h2 id="titulo-form-refaccion" style="font-size: 18px;">⚙️ Registrar Refacción</h2>
                         <form id="form-refaccion">
                             <input type="hidden" id="edit-id-refaccion">
-                            <input type="text" id="nombre-r" placeholder="Nombre de refacción" required>
+                            <input type="text" id="nombre-r" placeholder="Nombre" required>
                             <input type="number" step="0.01" id="precio-r" placeholder="Precio ($)" required>
                             <input type="number" id="stock-r" placeholder="Stock" required>
                             <button type="submit" id="btn-guardar-refaccion">Guardar Refacción</button>
                         </form>
                     </div>
-                </div>
-
-                <!-- CAMBIAR CONTRASEÑA LOGIN -->
-                <div class="card" style="border-left: 5px solid var(--warning);">
-                    <h2>🔑 Cambiar Contraseña de Acceso</h2>
-                    <form id="form-cambiar-pass">
-                        <select id="select-usuario-pass" required><option value="">Seleccione Usuario...</option></select>
-                        <input type="password" id="nueva-pass" placeholder="Nueva Contraseña" required>
-                        <button type="submit" style="background-color: var(--warning);">Actualizar Credenciales</button>
-                    </form>
                 </div>
 
             </div>
@@ -208,8 +197,23 @@
         </div>
     </div>
 
+    <!-- MODAL CAMBIAR CONTRASEÑA -->
+    <div id="modal-password" class="oculto" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="card" style="width: 100%; max-width: 380px; margin: 0; border-left: 5px solid var(--warning);">
+            <h2>🔑 Actualizar mi Contraseña</h2>
+            <form id="form-modal-pass">
+                <input type="password" id="nueva-pass-modal" placeholder="Nueva contraseña" required style="margin-top: 15px;">
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" style="background: var(--warning);">Guardar</button>
+                    <button type="button" onclick="cerrarModalPassword()" style="background: #64748b;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let datosGlobales = { clientes: [], vehiculos: [], ordenes: [], empleados: [], refacciones: [] };
+        let usuarioLogueado = null;
 
         document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -224,6 +228,7 @@
                 });
                 const data = await res.json();
                 if (data.exito) {
+                    usuarioLogueado = data;
                     document.getElementById('seccion-login').classList.add('oculto');
                     document.getElementById('seccion-panel').classList.remove('oculto');
                     document.getElementById('saludo-usuario').innerText = `Usuario: ${data.nombre} (${data.rol.toUpperCase()})`;
@@ -233,7 +238,7 @@
                     document.getElementById('error-login').innerText = data.mensaje;
                 }
             } catch (err) {
-                document.getElementById('error-login').innerText = 'Error de conexión con el servidor.';
+                document.getElementById('error-login').innerText = 'Error de conexión.';
             }
         });
 
@@ -247,12 +252,29 @@
         }
 
         function cerrarSesion() {
+            usuarioLogueado = null;
             document.getElementById('seccion-panel').classList.add('oculto');
             document.getElementById('seccion-login').classList.remove('oculto');
             document.getElementById('form-login').reset();
         }
 
-        // FUNCIONES DE CONTROL DE MODOS
+        function abrirModalPassword() { document.getElementById('modal-password').classList.remove('oculto'); document.getElementById('nueva-pass-modal').value = ''; }
+        function cerrarModalPassword() { document.getElementById('modal-password').classList.add('oculto'); }
+
+        document.getElementById('form-modal-pass').addEventListener('submit', async e => {
+            e.preventDefault();
+            const nuevaPassword = document.getElementById('nueva-pass-modal').value;
+            if (!usuarioLogueado?.id) return alert("Sesión no válida");
+            const res = await fetch(`/api/usuarios/${usuarioLogueado.id}/password`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nuevaPassword })
+            });
+            const data = await res.json();
+            alert(data.mensaje);
+            cerrarModalPassword();
+        });
+
         function cambiarModoCliente(modo) {
             if (modo === 'add') {
                 document.getElementById('edit-id-cliente').value = '';
@@ -332,29 +354,20 @@
             cargarDatos();
         }
 
-        // CARGAR DATOS Y REFRESCAR DINÁMICAMENTE
         async function cargarDatos() {
-            const [resC, resV, resO, resE, resR, resUsr] = await Promise.all([
+            const [resC, resV, resO, resE, resR] = await Promise.all([
                 fetch('/api/clientes').then(r => r.json()),
                 fetch('/api/vehiculos').then(r => r.json()),
                 fetch('/api/ordenes').then(r => r.json()),
                 fetch('/api/empleados').then(r => r.json()),
-                fetch('/api/refacciones').then(r => r.json()),
-                fetch('/api/usuarios').then(r => r.json())
+                fetch('/api/refacciones').then(r => r.json())
             ]);
 
             datosGlobales = { clientes: resC, vehiculos: resV, ordenes: resO, empleados: resE, refacciones: resR };
             renderizarListas(datosGlobales);
-
-            // Poblar selectores de usuarios para cambio de contraseña
-            const selectUsr = document.getElementById('select-usuario-pass');
-            selectUsr.innerHTML = '<option value="">Seleccione Usuario...</option>';
-            resUsr.forEach(u => selectUsr.innerHTML += `<option value="${u._id}">${u.usuario} (${u.nombre})</option>`);
         }
 
-        // RENDERIZAR LISTAS EN HTML
         function renderizarListas({ clientes, vehiculos, ordenes, empleados, refacciones }) {
-            // Clientes
             const listaC = document.getElementById('lista-clientes');
             const selectC = document.getElementById('cliente-v');
             listaC.innerHTML = clientes.length === 0 ? '<li>No hay clientes.</li>' : '';
@@ -364,7 +377,6 @@
                 selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
             });
 
-            // Vehículos
             const listaV = document.getElementById('lista-vehiculos');
             const selectV = document.getElementById('vehiculo-o');
             listaV.innerHTML = vehiculos.length === 0 ? '<li>No hay vehículos.</li>' : '';
@@ -374,7 +386,6 @@
                 selectV.innerHTML += `<option value="${v._id}">${v.marca} ${v.modelo} (${v.placas})</option>`;
             });
 
-            // Órdenes
             const listaO = document.getElementById('lista-ordenes');
             const mecanicos = empleados.filter(e => e.puesto === 'mecanico');
             listaO.innerHTML = ordenes.length === 0 ? '<li>No hay órdenes.</li>' : '';
@@ -384,7 +395,6 @@
                     let sel = o.mecanico_asignado === m.nombre ? 'selected' : '';
                     optionsMec += `<option value="${m.nombre}" ${sel}>${m.nombre}</option>`;
                 });
-
                 listaO.innerHTML += `<li>
                     <div class="info-content">🔧 <strong>Folio #${o.folio}</strong> - Estado: <b>${o.estado}</b><br>📝 ${o.descripcion}<br>👨‍🔧 Mecánico: <b>${o.mecanico_asignado || 'Sin asignar'}</b></div>
                     <div class="action-buttons" style="flex-direction: column; gap:4px;">
@@ -395,7 +405,6 @@
                 </li>`;
             });
 
-            // Empleados
             const listaE = document.getElementById('lista-empleados');
             listaE.innerHTML = empleados.length === 0 ? '<li>No hay empleados.</li>' : '';
             empleados.forEach(e => {
@@ -403,7 +412,6 @@
                 listaE.innerHTML += `<li><div>👨‍🔧 <strong>${nombreComp}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionEmpleado('${e._id}', '${nombreComp}', '${e.puesto}', '${e.telefono}')">Editar</button><button class="btn-eliminar" onclick="eliminarRegistro('empleados', '${e._id}')">Eliminar</button></div></li>`;
             });
 
-            // Refacciones
             const listaR = document.getElementById('lista-refacciones');
             listaR.innerHTML = refacciones.length === 0 ? '<li>No hay refacciones.</li>' : '';
             refacciones.forEach(r => {
@@ -411,17 +419,15 @@
             });
         }
 
-        // BÚSQUEDA DINÁMICA EN TIEMPO REAL
         function filtrarRegistros() {
             const texto = document.getElementById('input-busqueda').value.toLowerCase();
-            const filtrados = {
+            renderizarListas({
                 clientes: datosGlobales.clientes.filter(c => `${c.nombre} ${c.apellidos} ${c.correo}`.toLowerCase().includes(texto)),
                 vehiculos: datosGlobales.vehiculos.filter(v => `${v.marca} ${v.modelo} ${v.placas}`.toLowerCase().includes(texto)),
                 ordenes: datosGlobales.ordenes.filter(o => `${o.folio} ${o.descripcion} ${o.mecanico_asignado}`.toLowerCase().includes(texto)),
                 empleados: datosGlobales.empleados.filter(e => `${e.nombre} ${e.puesto}`.toLowerCase().includes(texto)),
                 refacciones: datosGlobales.refacciones.filter(r => `${r.nombre}`.toLowerCase().includes(texto))
-            };
-            renderizarListas(filtrados);
+            });
         }
 
         async function cambiarEstadoOrden(id, estado) {
@@ -434,7 +440,6 @@
             cargarDatos();
         }
 
-        // FORMULARIOS DE REGISTRO / ACTUALIZACIÓN
         document.getElementById('form-cliente').addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('edit-id-cliente').value;
@@ -476,17 +481,6 @@
             await fetch(id ? `/api/refacciones/${id}` : '/api/refacciones', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
             cambiarModoRef('add');
             cargarDatos();
-        });
-
-        document.getElementById('form-cambiar-pass').addEventListener('submit', async e => {
-            e.preventDefault();
-            const userId = document.getElementById('select-usuario-pass').value;
-            const nuevaPassword = document.getElementById('nueva-pass').value;
-            if (!userId) return alert("Seleccione un usuario");
-            const res = await fetch(`/api/usuarios/${userId}/password`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nuevaPassword }) });
-            const data = await res.json();
-            alert(data.mensaje);
-            e.target.reset();
         });
     </script>
 </body>
