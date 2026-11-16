@@ -203,7 +203,7 @@
                     </div>
                     <div class="card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2>⚙️ Refacciones</h2>
+                            <h2>⚙️ Refacciones <span style="font-size: 12px; color: #64748b; font-weight: normal;">(Clic para editar)</span></h2>
                             <button class="btn-eliminar" onclick="abrirSelectorEliminar('refacciones')" style="width: auto;">🗑️ Eliminar</button>
                         </div>
                         <ul id="lista-refacciones">Cargando...</ul>
@@ -302,7 +302,7 @@
         function abrirModalPassword() { document.getElementById('modal-password').classList.remove('oculto'); document.getElementById('nueva-pass-modal').value = ''; }
         function cerrarModalPassword() { document.getElementById('modal-password').classList.add('oculto'); }
 
-        // Modos de formularios
+        // Modos de formularios (Añadir / Actualizar)
         function cambiarModoCliente(modo) {
             if (modo === 'add') {
                 document.getElementById('edit-id-cliente').value = '';
@@ -399,6 +399,18 @@
             event.currentTarget.classList.add('seleccionado');
         }
 
+        function prepararEdicionRefaccion(id, nombre, precio, stock) {
+            cambiarModoRef('edit');
+            document.getElementById('edit-id-refaccion').value = id;
+            document.getElementById('nombre-r').value = nombre;
+            document.getElementById('precio-r').value = precio;
+            document.getElementById('stock-r').value = stock;
+            document.getElementById('titulo-form-refaccion').innerText = "Actualizar Refacción";
+            document.getElementById('btn-guardar-refaccion').innerText = "Actualizar Cambios";
+            document.querySelectorAll('#lista-refacciones li').forEach(li => li.classList.remove('seleccionado'));
+            event.currentTarget.classList.add('seleccionado');
+        }
+
         // Selector para Eliminar
         function abrirSelectorEliminar(coleccion) {
             coleccionActualEliminar = coleccion;
@@ -448,7 +460,7 @@
                 selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
             });
 
-            // Vehículos (Con tarjetas interactivas)
+            // Vehículos
             const listaV = document.getElementById('lista-vehiculos');
             const selectV = document.getElementById('vehiculo-o');
             listaV.innerHTML = vehiculos.length === 0 ? '<li>No hay vehículos.</li>' : '';
@@ -487,7 +499,7 @@
                 if(listaOMec) listaOMec.innerHTML += htmlItem;
             });
 
-            // Empleados (Con tarjetas interactivas)
+            // Empleados
             const listaE = document.getElementById('lista-empleados');
             listaE.innerHTML = empleados.length === 0 ? '<li>No hay empleados.</li>' : '';
             empleados.forEach(e => {
@@ -500,7 +512,9 @@
             const listaR = document.getElementById('lista-refacciones');
             listaR.innerHTML = refacciones.length === 0 ? '<li>No hay refacciones.</li>' : '';
             refacciones.forEach(r => {
-                listaR.innerHTML += `<li><div>⚙️ <strong>${r.nombre}</strong> - $${r.precio} (Stock: ${r.stock})</div></li>`;
+                listaR.innerHTML += `<li onclick="prepararEdicionRefaccion('${r._id}', '${r.nombre}', '${r.precio}', '${r.stock}')">
+                    <div class="info-content">⚙️ <strong>${r.nombre}</strong> - $${r.precio} (Stock: ${r.stock})</div>
+                </li>`;
             });
 
             // Vista Cliente
@@ -534,7 +548,8 @@
             cargarDatos();
         }
 
-        // Formularios de Creación / Actualización
+        // --- FORMULARIOS DE ENVÍO Y ACTUALIZACIÓN ---
+
         document.getElementById('form-cliente').addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('edit-id-cliente').value;
