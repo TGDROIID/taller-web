@@ -68,9 +68,11 @@
 
             <!-- VISTA ADMINISTRADOR -->
             <div id="vista-admin" class="oculto">
+                
+                <!-- CLIENTES -->
                 <div class="grid">
                     <div class="card">
-                        <h2>👥 Clientes <span style="font-size: 12px; color: #64748b; font-weight: normal;">(Haz clic en uno para editarlo)</span></h2>
+                        <h2>👥 Clientes <span style="font-size: 12px; color: #64748b; font-weight: normal;">(Clic para editar)</span></h2>
                         <ul id="lista-clientes">Cargando...</ul>
                     </div>
                     <div class="card">
@@ -90,16 +92,22 @@
                     </div>
                 </div>
 
+                <!-- VEHÍCULOS Y ÓRDENES -->
                 <div class="grid">
                     <div class="card">
-                        <h2>🚗 Registrar Vehículo</h2>
+                        <div class="mode-toggle">
+                            <button type="button" id="tab-add-vehiculo" class="active" onclick="cambiarModoVehiculo('add')">➕ Añadir</button>
+                            <button type="button" id="tab-edit-vehiculo" onclick="cambiarModoVehiculo('edit')">✏️ Actualizar</button>
+                        </div>
+                        <h2 id="titulo-form-vehiculo" style="font-size: 16px;">Registrar Vehículo</h2>
                         <form id="form-vehiculo">
+                            <input type="hidden" id="edit-id-vehiculo">
                             <input type="text" id="marca-v" placeholder="Marca" required>
                             <input type="text" id="modelo-v" placeholder="Modelo" required>
                             <input type="number" id="anio-v" placeholder="Año" required>
                             <input type="text" id="placas-v" placeholder="Placas" required>
-                            <select id="cliente-v"><option value="">Asignar a Cliente...</option></select>
-                            <button type="submit">Guardar Vehículo</button>
+                            <select id="cliente-v" required><option value="">Asignar a Cliente...</option></select>
+                            <button type="submit" id="btn-guardar-vehiculo">Guardar Vehículo</button>
                         </form>
                     </div>
                     <div class="card">
@@ -107,8 +115,45 @@
                         <form id="form-orden">
                             <input type="text" id="folio-o" placeholder="Folio" required>
                             <input type="text" id="desc-o" placeholder="Descripción del trabajo" required>
-                            <select id="vehiculo-o"><option value="">Asignar a Vehículo...</option></select>
+                            <select id="vehiculo-o" required><option value="">Asignar a Vehículo...</option></select>
                             <button type="submit">Generar Orden</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- EMPLEADOS Y REFACCIONES -->
+                <div class="grid">
+                    <div class="card">
+                        <div class="mode-toggle">
+                            <button type="button" id="tab-add-emp" class="active" onclick="cambiarModoEmpleado('add')">➕ Añadir</button>
+                            <button type="button" id="tab-edit-emp" onclick="cambiarModoEmpleado('edit')">✏️ Actualizar</button>
+                        </div>
+                        <h2 id="titulo-form-empleado" style="font-size: 16px;">Registrar Empleado</h2>
+                        <form id="form-empleado">
+                            <input type="hidden" id="edit-id-empleado">
+                            <input type="text" id="nombre-e" placeholder="Nombre completo" required>
+                            <select id="puesto-e" required>
+                                <option value="">Puesto...</option>
+                                <option value="mecanico">Mecánico</option>
+                                <option value="recepcion">Recepción</option>
+                                <option value="gerente">Gerente</option>
+                            </select>
+                            <input type="text" id="telefono-e" placeholder="Teléfono" required>
+                            <button type="submit" id="btn-guardar-empleado">Guardar Empleado</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <div class="mode-toggle">
+                            <button type="button" id="tab-add-ref" class="active" onclick="cambiarModoRef('add')">➕ Añadir</button>
+                            <button type="button" id="tab-edit-ref" onclick="cambiarModoRef('edit')">✏️ Actualizar</button>
+                        </div>
+                        <h2 id="titulo-form-refaccion" style="font-size: 16px;">Registrar Refacción</h2>
+                        <form id="form-refaccion">
+                            <input type="hidden" id="edit-id-refaccion">
+                            <input type="text" id="nombre-r" placeholder="Nombre" required>
+                            <input type="number" step="0.01" id="precio-r" placeholder="Precio ($)" required>
+                            <input type="number" id="stock-r" placeholder="Stock" required>
+                            <button type="submit" id="btn-guardar-refaccion">Guardar Refacción</button>
                         </form>
                     </div>
                 </div>
@@ -134,7 +179,7 @@
             <div id="seccion-listas-generales">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2>🚗 Vehículos Registrados</h2>
+                        <h2>🚗 Vehículos Registrados <span style="font-size: 12px; color: #64748b; font-weight: normal;">(Clic para editar)</span></h2>
                         <button class="btn-eliminar" onclick="abrirSelectorEliminar('vehiculos')" style="width: auto;">🗑️ Eliminar</button>
                     </div>
                     <ul id="lista-vehiculos">Cargando...</ul>
@@ -151,7 +196,7 @@
                 <div class="grid">
                     <div class="card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2>👨‍🔧 Empleados</h2>
+                            <h2>👨‍🔧 Empleados <span style="font-size: 12px; color: #64748b; font-weight: normal;">(Clic para editar)</span></h2>
                             <button class="btn-eliminar" onclick="abrirSelectorEliminar('empleados')" style="width: auto;">🗑️ Eliminar</button>
                         </div>
                         <ul id="lista-empleados">Cargando...</ul>
@@ -272,6 +317,49 @@
             }
         }
 
+        function cambiarModoVehiculo(modo) {
+            if (modo === 'add') {
+                document.getElementById('edit-id-vehiculo').value = '';
+                document.getElementById('form-vehiculo').reset();
+                document.getElementById('titulo-form-vehiculo').innerText = "Registrar Vehículo";
+                document.getElementById('btn-guardar-vehiculo').innerText = "Guardar Vehículo";
+                document.getElementById('tab-add-vehiculo').classList.add('active');
+                document.getElementById('tab-edit-vehiculo').classList.remove('active');
+            } else {
+                document.getElementById('tab-edit-vehiculo').classList.add('active');
+                document.getElementById('tab-add-vehiculo').classList.remove('active');
+            }
+        }
+
+        function cambiarModoEmpleado(modo) {
+            if (modo === 'add') {
+                document.getElementById('edit-id-empleado').value = '';
+                document.getElementById('form-empleado').reset();
+                document.getElementById('titulo-form-empleado').innerText = "Registrar Empleado";
+                document.getElementById('btn-guardar-empleado').innerText = "Guardar Empleado";
+                document.getElementById('tab-add-emp').classList.add('active');
+                document.getElementById('tab-edit-emp').classList.remove('active');
+            } else {
+                document.getElementById('tab-edit-emp').classList.add('active');
+                document.getElementById('tab-add-emp').classList.remove('active');
+            }
+        }
+
+        function cambiarModoRef(modo) {
+            if (modo === 'add') {
+                document.getElementById('edit-id-refaccion').value = '';
+                document.getElementById('form-refaccion').reset();
+                document.getElementById('titulo-form-refaccion').innerText = "Registrar Refacción";
+                document.getElementById('btn-guardar-refaccion').innerText = "Guardar Refacción";
+                document.getElementById('tab-add-ref').classList.add('active');
+                document.getElementById('tab-edit-ref').classList.remove('active');
+            } else {
+                document.getElementById('tab-edit-ref').classList.add('active');
+                document.getElementById('tab-add-ref').classList.remove('active');
+            }
+        }
+
+        // Preparar edición interactiva por tarjeta
         function prepararEdicionCliente(id, nombre, apellidos, telefono, correo) {
             cambiarModoCliente('edit');
             document.getElementById('edit-id-cliente').value = id;
@@ -281,9 +369,33 @@
             document.getElementById('correo-c').value = correo;
             document.getElementById('titulo-form-cliente').innerText = "Actualizar Cliente";
             document.getElementById('btn-guardar-cliente').innerText = "Actualizar Cambios";
-
-            // Resalta visualmente el elemento seleccionado en la lista
             document.querySelectorAll('#lista-clientes li').forEach(li => li.classList.remove('seleccionado'));
+            event.currentTarget.classList.add('seleccionado');
+        }
+
+        function prepararEdicionVehiculo(id, marca, modelo, año, placas, cliente_id) {
+            cambiarModoVehiculo('edit');
+            document.getElementById('edit-id-vehiculo').value = id;
+            document.getElementById('marca-v').value = marca;
+            document.getElementById('modelo-v').value = modelo;
+            document.getElementById('anio-v').value = año;
+            document.getElementById('placas-v').value = placas;
+            document.getElementById('cliente-v').value = cliente_id;
+            document.getElementById('titulo-form-vehiculo').innerText = "Actualizar Vehículo";
+            document.getElementById('btn-guardar-vehiculo').innerText = "Actualizar Cambios";
+            document.querySelectorAll('#lista-vehiculos li').forEach(li => li.classList.remove('seleccionado'));
+            event.currentTarget.classList.add('seleccionado');
+        }
+
+        function prepararEdicionEmpleado(id, nombre, puesto, telefono) {
+            cambiarModoEmpleado('edit');
+            document.getElementById('edit-id-empleado').value = id;
+            document.getElementById('nombre-e').value = nombre;
+            document.getElementById('puesto-e').value = puesto;
+            document.getElementById('telefono-e').value = telefono;
+            document.getElementById('titulo-form-empleado').innerText = "Actualizar Empleado";
+            document.getElementById('btn-guardar-empleado').innerText = "Actualizar Cambios";
+            document.querySelectorAll('#lista-empleados li').forEach(li => li.classList.remove('seleccionado'));
             event.currentTarget.classList.add('seleccionado');
         }
 
@@ -324,7 +436,7 @@
         }
 
         function renderizarListas({ clientes, vehiculos, ordenes, empleados, refacciones }) {
-            // Clientes (Con tarjetas interactivas sin botones amarillos individuales)
+            // Clientes
             const listaC = document.getElementById('lista-clientes');
             const selectC = document.getElementById('cliente-v');
             listaC.innerHTML = clientes.length === 0 ? '<li>No hay clientes.</li>' : '';
@@ -336,13 +448,15 @@
                 selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
             });
 
-            // Vehículos
+            // Vehículos (Con tarjetas interactivas)
             const listaV = document.getElementById('lista-vehiculos');
             const selectV = document.getElementById('vehiculo-o');
             listaV.innerHTML = vehiculos.length === 0 ? '<li>No hay vehículos.</li>' : '';
             selectV.innerHTML = '<option value="">Asignar a Vehículo...</option>';
             vehiculos.forEach(v => {
-                listaV.innerHTML += `<li><div>🚗 <strong>${v.marca} ${v.modelo}</strong> (${v.año}) - Placas: ${v.placas}</div></li>`;
+                listaV.innerHTML += `<li onclick="prepararEdicionVehiculo('${v._id}', '${v.marca}', '${v.modelo}', '${v.año}', '${v.placas}', '${v.cliente_id || ''}')">
+                    <div class="info-content">🚗 <strong>${v.marca} ${v.modelo}</strong> (${v.año}) - Placas: ${v.placas}</div>
+                </li>`;
                 selectV.innerHTML += `<option value="${v._id}">${v.marca} ${v.modelo} (${v.placas})</option>`;
             });
 
@@ -373,11 +487,13 @@
                 if(listaOMec) listaOMec.innerHTML += htmlItem;
             });
 
-            // Empleados
+            // Empleados (Con tarjetas interactivas)
             const listaE = document.getElementById('lista-empleados');
             listaE.innerHTML = empleados.length === 0 ? '<li>No hay empleados.</li>' : '';
             empleados.forEach(e => {
-                listaE.innerHTML += `<li><div>👨‍🔧 <strong>${e.nombre}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div></li>`;
+                listaE.innerHTML += `<li onclick="prepararEdicionEmpleado('${e._id}', '${e.nombre}', '${e.puesto}', '${e.telefono}')">
+                    <div class="info-content">👨‍🔧 <strong>${e.nombre}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div>
+                </li>`;
             });
 
             // Refacciones
@@ -418,34 +534,24 @@
             cargarDatos();
         }
 
-        // Evento único para el formulario de cliente (soporta POST al añadir o PUT al actualizar)
+        // Formularios de Creación / Actualización
         document.getElementById('form-cliente').addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('edit-id-cliente').value;
-            const datos = { 
-                nombre: document.getElementById('nombre-c').value, 
-                apellidos: document.getElementById('apellidos-c').value, 
-                telefono: document.getElementById('telefono-c').value, 
-                correo: document.getElementById('correo-c').value 
-            };
-            
-            await fetch(id ? `/api/clientes/${id}` : '/api/clientes', { 
-                method: id ? 'PUT' : 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(datos) 
-            });
-
-            alert(id ? "¡Cliente actualizado con éxito!" : "¡Cliente registrado con éxito!");
+            const datos = { nombre: document.getElementById('nombre-c').value, apellidos: document.getElementById('apellidos-c').value, telefono: document.getElementById('telefono-c').value, correo: document.getElementById('correo-c').value };
+            await fetch(id ? `/api/clientes/${id}` : '/api/clientes', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            alert(id ? "¡Cliente actualizado!" : "¡Cliente registrado!");
             cambiarModoCliente('add');
             cargarDatos();
         });
 
-        // Demás formularios
         document.getElementById('form-vehiculo').addEventListener('submit', async e => {
             e.preventDefault();
+            const id = document.getElementById('edit-id-vehiculo').value;
             const datos = { marca: document.getElementById('marca-v').value, modelo: document.getElementById('modelo-v').value, año: document.getElementById('anio-v').value, placas: document.getElementById('placas-v').value, cliente_id: document.getElementById('cliente-v').value };
-            await fetch('/api/vehiculos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
-            e.target.reset();
+            await fetch(id ? `/api/vehiculos/${id}` : '/api/vehiculos', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            alert(id ? "¡Vehículo actualizado!" : "¡Vehículo registrado!");
+            cambiarModoVehiculo('add');
             cargarDatos();
         });
 
@@ -453,7 +559,28 @@
             e.preventDefault();
             const datos = { folio: document.getElementById('folio-o').value, descripcion: document.getElementById('desc-o').value, vehiculo_id: document.getElementById('vehiculo-o').value };
             await fetch('/api/ordenes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            alert("¡Orden generada con éxito!");
             e.target.reset();
+            cargarDatos();
+        });
+
+        document.getElementById('form-empleado').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id-empleado').value;
+            const datos = { nombre: document.getElementById('nombre-e').value, puesto: document.getElementById('puesto-e').value, telefono: document.getElementById('telefono-e').value };
+            await fetch(id ? `/api/empleados/${id}` : '/api/empleados', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            alert(id ? "¡Empleado actualizado!" : "¡Empleado registrado!");
+            cambiarModoEmpleado('add');
+            cargarDatos();
+        });
+
+        document.getElementById('form-refaccion').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id-refaccion').value;
+            const datos = { nombre: document.getElementById('nombre-r').value, precio: document.getElementById('precio-r').value, stock: document.getElementById('stock-r').value };
+            await fetch(id ? `/api/refacciones/${id}` : '/api/refacciones', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
+            alert(id ? "¡Refacción actualizada!" : "¡Refacción registrada!");
+            cambiarModoRef('add');
             cargarDatos();
         });
     </script>
