@@ -35,7 +35,7 @@
     <!-- LOGIN -->
     <div id="seccion-login" class="login-box">
         <h2>🔐 Iniciar Sesión</h2>
-        <p style="font-size: 13px; color: #64748b;">Acceso: <b>admin / 123</b></p>
+        <p style="font-size: 13px; color: #64748b;">Prueba: admin / 123 | mecanico1 / 123</p>
         <form id="form-login">
             <input type="text" id="usuario" placeholder="Usuario" required>
             <input type="password" id="password" placeholder="Contraseña" required>
@@ -48,30 +48,29 @@
     <div id="seccion-panel" class="oculto">
         <header>
             <h1>🛠️ AutoGest Pro - Taller Mecánico</h1>
-            <p>Panel de Control y Gestión Operativa</p>
+            <p>Panel Operativo y de Gestión</p>
         </header>
 
         <div class="user-info">
             <span id="saludo-usuario">Bienvenido</span>
             <div style="display: flex; gap: 10px;">
-                <button onclick="abrirModalPassword()" style="background: var(--warning); padding: 5px 12px; margin: 0; width: auto;">🔑 Cambiar Contraseña</button>
+                <button onclick="abrirModalPassword()" style="background: var(--warning); padding: 5px 12px; margin: 0; width: auto;">🔑 Contraseña</button>
                 <button onclick="cerrarSesion()" style="background: var(--danger); padding: 5px 12px; margin: 0; width: auto;">Cerrar Sesión</button>
             </div>
         </div>
 
         <div class="container">
             
-            <!-- BARRA DE BÚSQUEDA GLOBAL -->
-            <div class="card search-bar">
-                <input type="text" id="input-busqueda" placeholder="🔍 Buscar cliente, vehículo, orden o refacción en tiempo real..." onkeyup="filtrarRegistros()" style="margin: 0;">
+            <!-- BARRA DE BÚSQUEDA GLOBAL (ADMIN Y MECÁNICO) -->
+            <div class="card search-bar" id="contenedor-busqueda">
+                <input type="text" id="input-busqueda" placeholder="🔍 Buscar clientes, vehículos, órdenes o refacciones..." onkeyup="filtrarRegistros()" style="margin: 0;">
             </div>
 
-            <!-- VISTA DE ADMINISTRADOR -->
+            <!-- VISTA ADMINISTRADOR -->
             <div id="vista-admin" class="oculto">
-                
                 <div class="grid">
                     <div class="card">
-                        <h2>👥 Clientes Registrados</h2>
+                        <h2>👥 Clientes</h2>
                         <ul id="lista-clientes">Cargando...</ul>
                     </div>
                     <div class="card">
@@ -79,13 +78,13 @@
                             <button type="button" id="tab-add-cliente" class="active" onclick="cambiarModoCliente('add')">➕ Añadir</button>
                             <button type="button" id="tab-edit-cliente" onclick="cambiarModoCliente('edit')">✏️ Actualizar</button>
                         </div>
-                        <h2 id="titulo-form-cliente" style="font-size: 18px;">➕ Registrar Cliente</h2>
+                        <h2 id="titulo-form-cliente" style="font-size: 16px;">Registrar Cliente</h2>
                         <form id="form-cliente">
                             <input type="hidden" id="edit-id-cliente">
                             <input type="text" id="nombre-c" placeholder="Nombre(s)" required>
                             <input type="text" id="apellidos-c" placeholder="Apellidos" required>
                             <input type="text" id="telefono-c" placeholder="Teléfono" required>
-                            <input type="email" id="correo-c" placeholder="Correo electrónico" required>
+                            <input type="email" id="correo-c" placeholder="Correo" required>
                             <button type="submit" id="btn-guardar-cliente">Guardar Cliente</button>
                         </form>
                     </div>
@@ -108,11 +107,6 @@
                         <form id="form-orden">
                             <input type="text" id="folio-o" placeholder="Folio" required>
                             <input type="text" id="desc-o" placeholder="Descripción del trabajo" required>
-                            <select id="estado-o">
-                                <option value="recibido">Recibido</option>
-                                <option value="en_reparacion">En Reparación</option>
-                                <option value="terminado">Terminado</option>
-                            </select>
                             <select id="vehiculo-o"><option value="">Asignar a Vehículo...</option></select>
                             <button type="submit">Generar Orden</button>
                         </form>
@@ -125,12 +119,12 @@
                             <button type="button" id="tab-add-emp" class="active" onclick="cambiarModoEmpleado('add')">➕ Añadir</button>
                             <button type="button" id="tab-edit-emp" onclick="cambiarModoEmpleado('edit')">✏️ Actualizar</button>
                         </div>
-                        <h2 id="titulo-form-empleado" style="font-size: 18px;">👨‍🔧 Registrar Empleado</h2>
+                        <h2 id="titulo-form-empleado" style="font-size: 16px;">Registrar Empleado</h2>
                         <form id="form-empleado">
                             <input type="hidden" id="edit-id-empleado">
                             <input type="text" id="nombre-e" placeholder="Nombre completo" required>
                             <select id="puesto-e" required>
-                                <option value="">Selecciona Puesto...</option>
+                                <option value="">Puesto...</option>
                                 <option value="mecanico">Mecánico</option>
                                 <option value="recepcion">Recepción</option>
                                 <option value="gerente">Gerente</option>
@@ -144,7 +138,7 @@
                             <button type="button" id="tab-add-ref" class="active" onclick="cambiarModoRef('add')">➕ Añadir</button>
                             <button type="button" id="tab-edit-ref" onclick="cambiarModoRef('edit')">✏️ Actualizar</button>
                         </div>
-                        <h2 id="titulo-form-refaccion" style="font-size: 18px;">⚙️ Registrar Refacción</h2>
+                        <h2 id="titulo-form-refaccion" style="font-size: 16px;">Registrar Refacción</h2>
                         <form id="form-refaccion">
                             <input type="hidden" id="edit-id-refaccion">
                             <input type="text" id="nombre-r" placeholder="Nombre" required>
@@ -154,55 +148,57 @@
                         </form>
                     </div>
                 </div>
-
             </div>
 
-            <!-- VISTAS ROL MECÁNICO Y CLIENTE -->
+            <!-- VISTA MECÁNICO -->
             <div id="vista-mecanico" class="oculto">
                 <div class="card">
-                    <h2>👨‍🔧 Órdenes de Trabajo Asignadas</h2>
-                    <ul id="lista-ordenes-mecanico">Cargando...</ul>
+                    <h2>👨‍🔧 Órdenes Asignadas y Colaborativas</h2>
+                    <ul id="lista-ordenes-mecanico">Cargando órdenes...</ul>
                 </div>
             </div>
 
+            <!-- VISTA CLIENTE -->
             <div id="vista-cliente" class="oculto">
                 <div class="card" style="border-left: 5px solid var(--success);">
-                    <h2>🚗 Estado Actual de mi Vehículo</h2>
+                    <h2>🚗 Estado de mis Vehículos y Órdenes</h2>
                     <ul id="lista-vehiculos-cliente">Consultando...</ul>
                 </div>
             </div>
 
-            <!-- LISTAS GENERALES CON BOTONES UNIFICADOS Y SELECTOR DE ELIMINACIÓN -->
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2>🚗 Vehículos Registrados</h2>
-                    <button class="btn-eliminar" onclick="abrirSelectorEliminar('vehiculos')" style="width: auto;">🗑️ Eliminar Vehículo</button>
-                </div>
-                <ul id="lista-vehiculos">Cargando...</ul>
-            </div>
-
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2>📋 Órdenes de Servicio Activas</h2>
-                    <button class="btn-eliminar" onclick="abrirSelectorEliminar('ordenes')" style="width: auto;">🗑️ Eliminar Orden</button>
-                </div>
-                <ul id="lista-ordenes">Cargando...</ul>
-            </div>
-
-            <div class="grid">
+            <!-- LISTAS GENERALES (ADMINISTRACIÓN DE REGISTROS) -->
+            <div id="seccion-listas-generales">
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2>👨‍🔧 Empleados</h2>
-                        <button class="btn-eliminar" onclick="abrirSelectorEliminar('empleados')" style="width: auto;">🗑️ Eliminar</button>
+                        <h2>🚗 Vehículos Registrados</h2>
+                        <button class="btn-eliminar" onclick="abrirSelectorEliminar('vehiculos')" style="width: auto;">🗑️ Eliminar</button>
                     </div>
-                    <ul id="lista-empleados">Cargando...</ul>
+                    <ul id="lista-vehiculos">Cargando...</ul>
                 </div>
+
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2>⚙️ Refacciones</h2>
-                        <button class="btn-eliminar" onclick="abrirSelectorEliminar('refacciones')" style="width: auto;">🗑️ Eliminar</button>
+                        <h2>📋 Órdenes de Servicio Activas</h2>
+                        <button class="btn-eliminar" onclick="abrirSelectorEliminar('ordenes')" style="width: auto;">🗑️ Eliminar</button>
                     </div>
-                    <ul id="lista-refacciones">Cargando...</ul>
+                    <ul id="lista-ordenes">Cargando...</ul>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2>👨‍🔧 Empleados</h2>
+                            <button class="btn-eliminar" onclick="abrirSelectorEliminar('empleados')" style="width: auto;">🗑️ Eliminar</button>
+                        </div>
+                        <ul id="lista-empleados">Cargando...</ul>
+                    </div>
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2>⚙️ Refacciones</h2>
+                            <button class="btn-eliminar" onclick="abrirSelectorEliminar('refacciones')" style="width: auto;">🗑️ Eliminar</button>
+                        </div>
+                        <ul id="lista-refacciones">Cargando...</ul>
+                    </div>
                 </div>
             </div>
 
@@ -212,7 +208,7 @@
     <!-- MODAL CAMBIAR CONTRASEÑA -->
     <div id="modal-password" class="oculto" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
         <div class="card" style="width: 100%; max-width: 380px; margin: 0; border-left: 5px solid var(--warning);">
-            <h2>🔑 Actualizar mi Contraseña</h2>
+            <h2>🔑 Actualizar Contraseña</h2>
             <form id="form-modal-pass">
                 <input type="password" id="nueva-pass-modal" placeholder="Nueva contraseña" required style="margin-top: 15px;">
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -226,7 +222,7 @@
     <!-- MODAL SELECCIONAR PARA ELIMINAR -->
     <div id="modal-eliminar" class="oculto" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
         <div class="card" style="width: 100%; max-width: 380px; margin: 0; border-left: 5px solid var(--danger);">
-            <h2 id="titulo-modal-eliminar" style="font-size: 16px;">🗑️ Seleccionar elemento a eliminar</h2>
+            <h2 style="font-size: 16px;">🗑️ Seleccionar elemento a eliminar</h2>
             <select id="select-item-eliminar" style="margin-top: 15px;">
                 <option value="">Seleccione...</option>
             </select>
@@ -259,7 +255,7 @@
                     document.getElementById('seccion-login').classList.add('oculto');
                     document.getElementById('seccion-panel').classList.remove('oculto');
                     document.getElementById('saludo-usuario').innerText = `Usuario: ${data.nombre} (${data.rol.toUpperCase()})`;
-                    aplicarPermisosRol(data.rol);
+                    aplicarPermisosRol(data.rol, data.nombre);
                     cargarDatos();
                 } else {
                     document.getElementById('error-login').innerText = data.mensaje;
@@ -269,13 +265,22 @@
             }
         });
 
-        function aplicarPermisosRol(rol) {
+        function aplicarPermisosRol(rol, nombreUsuario) {
             document.getElementById('vista-admin').classList.add('oculto');
             document.getElementById('vista-mecanico').classList.add('oculto');
             document.getElementById('vista-cliente').classList.add('oculto');
-            if (rol === 'administrador') document.getElementById('vista-admin').classList.remove('oculto');
-            else if (rol === 'mecanico') document.getElementById('vista-mecanico').classList.remove('oculto');
-            else if (rol === 'cliente') document.getElementById('vista-cliente').classList.remove('oculto');
+            document.getElementById('seccion-listas-generales').classList.remove('oculto');
+            document.getElementById('contenedor-busqueda').classList.remove('oculto');
+
+            if (rol === 'administrador') {
+                document.getElementById('vista-admin').classList.remove('oculto');
+            } else if (rol === 'mecanico') {
+                document.getElementById('vista-mecanico').classList.remove('oculto');
+            } else if (rol === 'cliente') {
+                document.getElementById('vista-cliente').classList.remove('oculto');
+                document.getElementById('seccion-listas-generales').classList.add('oculto');
+                document.getElementById('contenedor-busqueda').classList.add('oculto');
+            }
         }
 
         function cerrarSesion() {
@@ -302,11 +307,12 @@
             cerrarModalPassword();
         });
 
+        // Modos de formularios
         function cambiarModoCliente(modo) {
             if (modo === 'add') {
                 document.getElementById('edit-id-cliente').value = '';
                 document.getElementById('form-cliente').reset();
-                document.getElementById('titulo-form-cliente').innerText = "➕ Registrar Cliente";
+                document.getElementById('titulo-form-cliente').innerText = "Registrar Cliente";
                 document.getElementById('btn-guardar-cliente').innerText = "Guardar Cliente";
                 document.getElementById('tab-add-cliente').classList.add('active');
                 document.getElementById('tab-edit-cliente').classList.remove('active');
@@ -315,12 +321,11 @@
                 document.getElementById('tab-add-cliente').classList.remove('active');
             }
         }
-
         function cambiarModoEmpleado(modo) {
             if (modo === 'add') {
                 document.getElementById('edit-id-empleado').value = '';
                 document.getElementById('form-empleado').reset();
-                document.getElementById('titulo-form-empleado').innerText = "👨‍🔧 Registrar Empleado";
+                document.getElementById('titulo-form-empleado').innerText = "Registrar Empleado";
                 document.getElementById('btn-guardar-empleado').innerText = "Guardar Empleado";
                 document.getElementById('tab-add-emp').classList.add('active');
                 document.getElementById('tab-edit-emp').classList.remove('active');
@@ -329,12 +334,11 @@
                 document.getElementById('tab-add-emp').classList.remove('active');
             }
         }
-
         function cambiarModoRef(modo) {
             if (modo === 'add') {
                 document.getElementById('edit-id-refaccion').value = '';
                 document.getElementById('form-refaccion').reset();
-                document.getElementById('titulo-form-refaccion').innerText = "⚙️ Registrar Refacción";
+                document.getElementById('titulo-form-refaccion').innerText = "Registrar Refacción";
                 document.getElementById('btn-guardar-refaccion').innerText = "Guardar Refacción";
                 document.getElementById('tab-add-ref').classList.add('active');
                 document.getElementById('tab-edit-ref').classList.remove('active');
@@ -351,73 +355,50 @@
             document.getElementById('apellidos-c').value = apellidos;
             document.getElementById('telefono-c').value = telefono;
             document.getElementById('correo-c').value = correo;
-            document.getElementById('titulo-form-cliente').innerText = "✏️ Actualizar Cliente";
+            document.getElementById('titulo-form-cliente').innerText = "Actualizar Cliente";
             document.getElementById('btn-guardar-cliente').innerText = "Actualizar Cambios";
         }
-
         function prepararEdicionEmpleado(id, nombre, puesto, telefono) {
             cambiarModoEmpleado('edit');
             document.getElementById('edit-id-empleado').value = id;
             document.getElementById('nombre-e').value = nombre;
             document.getElementById('puesto-e').value = puesto;
             document.getElementById('telefono-e').value = telefono;
-            document.getElementById('titulo-form-empleado').innerText = "✏️ Actualizar Empleado";
+            document.getElementById('titulo-form-empleado').innerText = "Actualizar Empleado";
             document.getElementById('btn-guardar-empleado').innerText = "Actualizar Cambios";
         }
-
         function prepararEdicionRefaccion(id, nombre, precio, stock) {
             cambiarModoRef('edit');
             document.getElementById('edit-id-refaccion').value = id;
             document.getElementById('nombre-r').value = nombre;
             document.getElementById('precio-r').value = precio;
             document.getElementById('stock-r').value = stock;
-            document.getElementById('titulo-form-refaccion').innerText = "✏️ Actualizar Refacción";
+            document.getElementById('titulo-form-refaccion').innerText = "Actualizar Refacción";
             document.getElementById('btn-guardar-refaccion').innerText = "Actualizar Cambios";
         }
 
-        // FUNCIONES DE SELECCIÓN PARA ELIMINAR
+        // Selector para Eliminar
         function abrirSelectorEliminar(coleccion) {
             coleccionActualEliminar = coleccion;
             const select = document.getElementById('select-item-eliminar');
             select.innerHTML = '<option value="">Seleccione el registro...</option>';
-
-            const listaDatos = datosGlobales[coleccion] || [];
-
-            listaDatos.forEach(item => {
-                let texto = item.nombre ? `${item.nombre} ${item.apellidos || ''}` : (item.folio ? `Folio #${item.folio} - ${item.descripcion}` : (item.marca ? `${item.marca} ${item.modelo} (${item.placas})` : item.sku));
-                select.innerHTML += `<option value="${item._id}">${texto}</option>`;
+            const lista = datosGlobales[coleccion] || [];
+            lista.forEach(item => {
+                let txt = item.nombre ? `${item.nombre} ${item.apellidos || ''}` : (item.folio ? `Folio #${item.folio}` : (item.marca ? `${item.marca} ${item.modelo} (${item.placas})` : item._id));
+                select.innerHTML += `<option value="${item._id}">${txt}</option>`;
             });
-
             document.getElementById('modal-eliminar').classList.remove('oculto');
         }
-
-        function cerrarModalEliminar() {
-            document.getElementById('modal-eliminar').classList.add('oculto');
-        }
+        function cerrarModalEliminar() { document.getElementById('modal-eliminar').classList.add('oculto'); }
 
         async function ejecutarEliminacionSeleccionada() {
-            const idSeleccionado = document.getElementById('select-item-eliminar').value;
-            if (!idSeleccionado) return alert("Por favor seleccione un elemento de la lista.");
-
-            if (!confirm("¿Estás seguro de eliminar este registro de la base de datos?")) return;
-
-            try {
-                let endpoint = coleccionActualEliminar;
-                if (endpoint === 'ordenes') endpoint = 'ordenes';
-
-                const res = await fetch(`/api/${endpoint}/${idSeleccionado}`, { method: 'DELETE' });
-                const data = await res.json();
-                
-                if (data.exito || data) {
-                    alert("¡Registro eliminado con éxito!");
-                    cerrarModalEliminar();
-                    cargarDatos();
-                } else {
-                    alert("Error al intentar eliminar el registro.");
-                }
-            } catch (err) {
-                alert("Error de conexión con el servidor.");
-            }
+            const id = document.getElementById('select-item-eliminar').value;
+            if (!id) return alert("Seleccione un elemento.");
+            if (!confirm("¿Seguro de eliminar este registro?")) return;
+            await fetch(`/api/${coleccionActualEliminar}/${id}`, { method: 'DELETE' });
+            alert("Eliminado con éxito.");
+            cerrarModalEliminar();
+            cargarDatos();
         }
 
         async function cargarDatos() {
@@ -428,12 +409,12 @@
                 fetch('/api/empleados').then(r => r.json()),
                 fetch('/api/refacciones').then(r => r.json())
             ]);
-
             datosGlobales = { clientes: resC, vehiculos: resV, ordenes: resO, empleados: resE, refacciones: resR };
             renderizarListas(datosGlobales);
         }
 
         function renderizarListas({ clientes, vehiculos, ordenes, empleados, refacciones }) {
+            // Clientes
             const listaC = document.getElementById('lista-clientes');
             const selectC = document.getElementById('cliente-v');
             listaC.innerHTML = clientes.length === 0 ? '<li>No hay clientes.</li>' : '';
@@ -443,6 +424,7 @@
                 selectC.innerHTML += `<option value="${c._id}">${c.nombre} ${c.apellidos}</option>`;
             });
 
+            // Vehículos
             const listaV = document.getElementById('lista-vehiculos');
             const selectV = document.getElementById('vehiculo-o');
             listaV.innerHTML = vehiculos.length === 0 ? '<li>No hay vehículos.</li>' : '';
@@ -452,36 +434,55 @@
                 selectV.innerHTML += `<option value="${v._id}">${v.marca} ${v.modelo} (${v.placas})</option>`;
             });
 
+            // Órdenes (Administrador y Mecánico)
             const listaO = document.getElementById('lista-ordenes');
-            const mecanicos = empleados.filter(e => e.puesto === 'mecanico');
+            const listaOMec = document.getElementById('lista-ordenes-mecanico');
             listaO.innerHTML = ordenes.length === 0 ? '<li>No hay órdenes.</li>' : '';
+            if(listaOMec) listaOMec.innerHTML = '';
+
+            const mecanicos = empleados.filter(e => e.puesto === 'mecanico');
+
             ordenes.forEach(o => {
                 let optionsMec = '<option value="">Asignar mecánico...</option>';
                 mecanicos.forEach(m => {
                     let sel = o.mecanico_asignado === m.nombre ? 'selected' : '';
                     optionsMec += `<option value="${m.nombre}" ${sel}>${m.nombre}</option>`;
                 });
-                listaO.innerHTML += `<li>
+
+                const htmlItem = `<li>
                     <div class="info-content">🔧 <strong>Folio #${o.folio}</strong> - Estado: <b>${o.estado}</b><br>📝 ${o.descripcion}<br>👨‍🔧 Mecánico: <b>${o.mecanico_asignado || 'Sin asignar'}</b></div>
                     <div class="action-buttons" style="flex-direction: column; gap:4px;">
                         <select onchange="asignarMecanico('${o._id}', this.value)" style="font-size:11px; padding:2px;">${optionsMec}</select>
-                        <button class="btn-editar" style="background:var(--success); font-size:11px;" onclick="cambiarEstadoOrden('${o._id}', 'terminado')">Validar / Finalizar</button>
+                        <button class="btn-editar" style="background:var(--success); font-size:11px;" onclick="cambiarEstadoOrden('${o._id}', 'terminado')">Marcar Terminado</button>
                     </div>
                 </li>`;
+
+                listaO.innerHTML += htmlItem;
+                if(listaOMec) listaOMec.innerHTML += htmlItem;
             });
 
+            // Empleados
             const listaE = document.getElementById('lista-empleados');
             listaE.innerHTML = empleados.length === 0 ? '<li>No hay empleados.</li>' : '';
             empleados.forEach(e => {
-                const nombreComp = e.nombre_completo || e.nombre;
-                listaE.innerHTML += `<li><div>👨‍🔧 <strong>${nombreComp}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionEmpleado('${e._id}', '${nombreComp}', '${e.puesto}', '${e.telefono}')">Actualizar</button></div></li>`;
+                listaE.innerHTML += `<li><div>👨‍🔧 <strong>${e.nombre}</strong><br>💼 Puesto: ${e.puesto} | 📞 ${e.telefono}</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionEmpleado('${e._id}', '${e.nombre}', '${e.puesto}', '${e.telefono}')">Actualizar</button></div></li>`;
             });
 
+            // Refacciones
             const listaR = document.getElementById('lista-refacciones');
             listaR.innerHTML = refacciones.length === 0 ? '<li>No hay refacciones.</li>' : '';
             refacciones.forEach(r => {
                 listaR.innerHTML += `<li><div>⚙️ <strong>${r.nombre}</strong> - $${r.precio} (Stock: ${r.stock})</div><div class="action-buttons"><button class="btn-editar" onclick="prepararEdicionRefaccion('${r._id}', '${r.nombre}', '${r.precio}', '${r.stock}')">Actualizar</button></div></li>`;
             });
+
+            // Vista Cliente
+            const listaVC = document.getElementById('lista-vehiculos-cliente');
+            if(listaVC) {
+                listaVC.innerHTML = ordenes.length === 0 ? '<li>No hay órdenes asociadas.</li>' : '';
+                ordenes.forEach(o => {
+                    listaVC.innerHTML += `<li><div>🚗 Orden <b>#${o.folio}</b> - Estado actual: <b style="color:var(--accent);">${o.estado.toUpperCase()}</b><br>📝 ${o.descripcion}</div></li>`;
+                });
+            }
         }
 
         function filtrarRegistros() {
@@ -505,6 +506,7 @@
             cargarDatos();
         }
 
+        // Eventos de Formularios
         document.getElementById('form-cliente').addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('edit-id-cliente').value;
@@ -524,7 +526,7 @@
 
         document.getElementById('form-orden').addEventListener('submit', async e => {
             e.preventDefault();
-            const datos = { folio: document.getElementById('folio-o').value, descripcion: document.getElementById('desc-o').value, estado: document.getElementById('estado-o').value, vehiculo_id: document.getElementById('vehiculo-o').value };
+            const datos = { folio: document.getElementById('folio-o').value, descripcion: document.getElementById('desc-o').value, vehiculo_id: document.getElementById('vehiculo-o').value };
             await fetch('/api/ordenes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datos) });
             e.target.reset();
             cargarDatos();

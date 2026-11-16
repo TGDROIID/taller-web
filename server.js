@@ -33,7 +33,7 @@ MongoClient.connect(uri, { tlsInsecure: true })
                     { usuario: "mecanico1", password: hashedPassword, rol: "mecanico", nombre: "Pedro (Mecánico)" },
                     { usuario: "cliente1", password: hashedPassword, rol: "cliente", nombre: "Juan Pérez (Cliente)" }
                 ]);
-                console.log("Usuarios de prueba creados con seguridad Hash (bcrypt).");
+                console.log("Usuarios iniciales creados correctamente.");
             }
         } catch (e) {
             console.log("Aviso en usuarios:", e.message);
@@ -45,7 +45,7 @@ MongoClient.connect(uri, { tlsInsecure: true })
     })
     .catch(error => console.error("Error al conectar a MongoDB:", error));
 
-// --- AUTENTICACIÓN SEGURA CON HASH (BCRYPT) ---
+// --- AUTENTICACIÓN ---
 app.post('/api/login', async (req, res) => {
     try {
         const { usuario, password } = req.body;
@@ -55,28 +55,28 @@ app.post('/api/login', async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) return res.status(401).json({ exito: false, mensaje: "Usuario o contraseña incorrectos" });
 
-        res.json({ exito: true, rol: user.rol, nombre: user.nombre, id: user._id });
+        res.json({ exito: true, rol: user.rol, nombre: user.nombre, id: user._id, usuario: user.usuario });
     } catch (error) {
         res.status(500).json({ exito: false, mensaje: "Error en el servidor" });
     }
 });
 
-// --- RUTA PARA CAMBIAR CONTRASEÑA DE USUARIO ---
+// --- CAMBIAR CONTRASEÑA ---
 app.put('/api/usuarios/:id/password', async (req, res) => {
     try {
         const { id } = req.params;
         const { nuevaPassword } = req.body;
-        if (!nuevaPassword) return res.status(400).json({ exito: false, mensaje: "La nueva contraseña es requerida" });
+        if (!nuevaPassword) return res.status(400).json({ exito: false, mensaje: "La contraseña es requerida" });
 
         const hashedPassword = await bcrypt.hash(nuevaPassword, 10);
         await db.collection('usuarios').updateOne({ _id: new ObjectId(id) }, { $set: { password: hashedPassword } });
         res.json({ exito: true, mensaje: "¡Contraseña actualizada con éxito!" });
     } catch (error) {
-        res.status(500).json({ exito: false, mensaje: "Error al actualizar la contraseña" });
+        res.status(500).json({ exito: false, mensaje: "Error al actualizar contraseña" });
     }
 });
 
-// --- RUTAS GET (CONSULTAS) ---
+// --- RUTAS GET ---
 app.get('/api/clientes', async (req, res) => { res.json(await db.collection('clientes').find().toArray()); });
 app.get('/api/vehiculos', async (req, res) => { res.json(await db.collection('vehiculos').find().toArray()); });
 app.get('/api/ordenes', async (req, res) => { res.json(await db.collection('ordenes_servicio').find().toArray()); });
@@ -85,75 +85,58 @@ app.get('/api/refacciones', async (req, res) => { res.json(await db.collection('
 app.get('/api/servicios', async (req, res) => { res.json(await db.collection('servicios').find().toArray()); });
 app.get('/api/usuarios', async (req, res) => { res.json(await db.collection('usuarios').find({}, { projection: { password: 0 } }).toArray()); });
 
-// --- RUTAS POST (REGISTRO) ---
+// --- RUTAS POST ---
 app.post('/api/clientes', async (req, res) => {
-    const resultado = await db.collection('clientes').insertOne({ ...req.body, activo: true, fecha_registro: new Date() });
-    res.json({ exito: true, mensaje: "Cliente registrado con éxito", id: resultado.insertedId });
+    const r = await db.collection('clientes').insertOne({ ...req.body, fecha: new Date() });
+    res.json({ exito: true, id: r.insertedId });
 });
-
 app.post('/api/vehiculos', async (req, res) => {
-    const { marca, modelo, año, placas, cliente_id } = req.body;
-    const nuevoV = {
-        marca, modelo, año: parseInt(año) || 2020, placas,
-        cliente_id: cliente_id && ObjectId.isValid(cliente_id) ? new ObjectId(cliente_id) : null,
-        activo: true, fecha_registro: new Date()
-    };
-    const resultado = await db.collection('vehiculos').insertOne(nuevoV);
-    res.json({ exito: true, mensaje: "Vehículo registrado con éxito", id: resultado.insertedId });
+    const r = await db.collection('vehiculos').insertOne({ ...req.body, año: parseInt(req.body.año) || 2020 });
+    res.json({ exito: true, id: r.insertedId });
 });
-
 app.post('/api/ordenes', async (req, res) => {
-    const { folio, descripcion, estado, vehiculo_id } = req.body;
-    const nuevaO = {
-        folio, descripcion, estado: estado || "recibido", mecanico_asignado: "Sin asignar",
-        vehiculo_id: vehiculo_id && ObjectId.isValid(vehiculo_id) ? new ObjectId(vehiculo_id) : null,
-        fecha_ingreso: new Date(), activo: true
-    };
-    const resultado = await db.collection('ordenes_servicio').insertOne(nuevaO);
-    res.json({ exito: true, mensaje: "Orden creada con éxito", id: resultado.insertedId });
+    const nuevaO = { ...req.body, estado: "recibido", mecanico_asignado: "Sin asignar", fecha: new Date() };
+    const r = await db.collection('ordenes_servicio').insertOne(nuevaO);
+    res.json({ exito: true, id: r.insertedId });
 });
-
 app.post('/api/empleados', async (req, res) => {
-    const resultado = await db.collection('empleados').insertOne({ ...req.body, activo: true, fecha_registro: new Date() });
-    res.json({ exito: true, mensaje: "Empleado registrado con éxito", id: resultado.insertedId });
+    const r = await db.collection('empleados').insertOne(req.body);
+    res.json({ exito: true, id: r.insertedId });
 });
-
 app.post('/api/refacciones', async (req, res) => {
-    const resultado = await db.collection('refacciones').insertOne({ ...req.body, activo: true, fecha_registro: new Date() });
-    res.json({ exito: true, mensaje: "Refacción registrada con éxito", id: resultado.insertedId });
+    const r = await db.collection('refacciones').insertOne(req.body);
+    res.json({ exito: true, id: r.insertedId });
 });
-
 app.post('/api/servicios', async (req, res) => {
-    const resultado = await db.collection('servicios').insertOne({ ...req.body, activo: true, fecha_registro: new Date() });
-    res.json({ exito: true, mensaje: "Servicio registrado con éxito", id: resultado.insertedId });
+    const r = await db.collection('servicios').insertOne(req.body);
+    res.json({ exito: true, id: r.insertedId });
 });
 
 // --- RUTAS PUT (ACTUALIZAR) ---
 app.put('/api/clientes/:id', async (req, res) => {
     await db.collection('clientes').updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
-    res.json({ exito: true, mensaje: "Cliente actualizado con éxito" });
+    res.json({ exito: true });
 });
 app.put('/api/vehiculos/:id', async (req, res) => {
     await db.collection('vehiculos').updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
-    res.json({ exito: true, mensaje: "Vehículo actualizado con éxito" });
+    res.json({ exito: true });
 });
 app.put('/api/empleados/:id', async (req, res) => {
     await db.collection('empleados').updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
-    res.json({ exito: true, mensaje: "Empleado actualizado con éxito" });
+    res.json({ exito: true });
 });
 app.put('/api/ordenes/:id', async (req, res) => {
     await db.collection('ordenes_servicio').updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
-    res.json({ exito: true, mensaje: "Orden actualizada con éxito" });
+    res.json({ exito: true });
 });
 app.put('/api/refacciones/:id', async (req, res) => {
     await db.collection('refacciones').updateOne({ _id: new ObjectId(req.params.id) }, { $set: req.body });
-    res.json({ exito: true, mensaje: "Refacción actualizada con éxito" });
+    res.json({ exito: true });
 });
 
-// --- RUTAS DELETE (ELIMINAR) ---
+// --- RUTAS DELETE ---
 app.delete('/api/clientes/:id', async (req, res) => { res.json({ exito: await db.collection('clientes').deleteOne({ _id: new ObjectId(req.params.id) }) }); });
 app.delete('/api/vehiculos/:id', async (req, res) => { res.json({ exito: await db.collection('vehiculos').deleteOne({ _id: new ObjectId(req.params.id) }) }); });
 app.delete('/api/empleados/:id', async (req, res) => { res.json({ exito: await db.collection('empleados').deleteOne({ _id: new ObjectId(req.params.id) }) }); });
 app.delete('/api/refacciones/:id', async (req, res) => { res.json({ exito: await db.collection('refacciones').deleteOne({ _id: new ObjectId(req.params.id) }) }); });
-app.delete('/api/servicios/:id', async (req, res) => { res.json({ exito: await db.collection('servicios').deleteOne({ _id: new ObjectId(req.params.id) }) }); });
 app.delete('/api/ordenes/:id', async (req, res) => { res.json({ exito: await db.collection('ordenes_servicio').deleteOne({ _id: new ObjectId(req.params.id) }) }); });
